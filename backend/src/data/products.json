@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "name": "Peach Coral Tee",
+    "image_url": "https://example.com/images/peach_coral_tee.jpg",
+    "dominant_color": "coral",
+    "garment_category": "upper_body"
+  },
+  {
+    "id": 2,
+    "name": "Mustard Summer Dress",
+    "image_url": "https://example.com/images/mustard_dress.jpg",
+    "dominant_color": "mustard",
+    "garment_category": "full_body"
+  },
+  {
+    "id": 3,
+    "name": "Rust Corduroy Pants",
+    "image_url": "https://example.com/images/rust_pants.jpg",
+    "dominant_color": "rust",
+    "garment_category": "lower_body"
+  },
+  {
+    "id": 4,
+    "name": "Olive Green Utility Jacket",
+    "image_url": "https://example.com/images/olive_jacket.jpg",
+    "dominant_color": "olive",
+    "garment_category": "upper_body"
+  },
+  {
+    "id": 5,
+    "name": "Emerald Satin Gown",
+    "image_url": "https://example.com/images/emerald_gown.jpg",
+    "dominant_color": "emerald",
+    "garment_category": "full_body"
+  },
+  {
+    "id": 6,
+    "name": "Royal Blue Wool Blazer",
+    "image_url": "https://example.com/images/royal_blue_blazer.jpg",
+    "dominant_color": "royal_blue",
+    "garment_category": "upper_body"
+  },
+  {
+    "id": 7,
+    "name": "Jet Black Chino Pants",
+    "image_url": "https://example.com/images/black_chino.jpg",
+    "dominant_color": "black",
+    "garment_category": "lower_body"
+  },
+  {
+    "id": 8,
+    "name": "Powder Blue Knit Sweater",
+    "image_url": "https://example.com/images/powder_blue_sweater.jpg",
+    "dominant_color": "powder_blue",
+    "garment_category": "upper_body"
+  },
+  {
+    "id": 9,
+    "name": "Lavender Pleated Skirt",
+    "image_url": "https://example.com/images/lavender_skirt.jpg",
+    "dominant_color": "lavender",
+    "garment_category": "lower_body"
+  },
+  {
+    "id": 10,
+    "name": "Terracotta Casual Romper",
+    "image_url": "https://example.com/images/terracotta_romper.jpg",
+    "dominant_color": "terracotta",
+    "garment_category": "full_body"
+  },
+  {
+    "id": 11,
+    "name": "Ruby Red Velvet Suit",
+    "image_url": "https://example.com/images/ruby_red_suit.jpg",
+    "dominant_color": "ruby_red",
+    "garment_category": "full_body"
+  },
+  {
+    "id": 12,
+    "name": "Forest Green Cargo Trousers",
+    "image_url": "https://example.com/images/forest_green_cargo.jpg",
+    "dominant_color": "forest_green",
+    "garment_category": "lower_body"
+  },
+  {
+    "id": 13,
+    "name": "Burnt Orange Ribbed Top",
+    "image_url": "https://example.com/images/burnt_orange_top.jpg",
+    "dominant_color": "burnt_orange",
+    "garment_category": "upper_body"
+  },
+  {
+    "id": 14,
+    "name": "Slate Gray Denim Shorts",
+    "image_url": "https://example.com/images/slate_gray_shorts.jpg",
+    "dominant_color": "slate_gray",
+    "garment_category": "lower_body"
+  },
+  {
+    "id": 15,
+    "name": "Pure White Linen Shirtdress",
+    "image_url": "https://example.com/images/white_shirtdress.jpg",
+    "dominant_color": "white",
+    "garment_category": "full_body"
+  },
+  {
+    "id": 16,
+    "name": "Chocolate Brown Cardigan",
+    "image_url": "https://example.com/images/chocolate_cardigan.jpg",
+    "dominant_color": "chocolate_brown",
+    "garment_category": "upper_body"
+  },
+  {
+    "id": 17,
+    "name": "Hot Pink Cocktail Dress",
+    "image_url": "https://example.com/images/hot_pink_dress.jpg",
+    "dominant_color": "hot_pink",
+    "garment_category": "full_body"
+  },
+  {
+    "id": 18,
+    "name": "Cobalt Blue Track Pants",
+    "image_url": "https://example.com/images/cobalt_pants.jpg",
+    "dominant_color": "cobalt_blue",
+    "garment_category": "lower_body"
+  }
+]
