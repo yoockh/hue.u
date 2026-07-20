@@ -31,7 +31,7 @@ const getProducts = (req, res, next) => {
       data: filteredProducts
     });
   } catch (error) {
-    next(new AppError('Gagal mengambil data katalog produk.', 500, 'products_fetch_error'));
+    next(new AppError('Failed to retrieve product catalog.', 500, 'products_fetch_error'));
   }
 };
 

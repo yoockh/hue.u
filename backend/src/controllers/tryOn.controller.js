@@ -8,19 +8,19 @@ const tryOn = async (req, res, next) => {
     const { ref_image_url, garment_category } = req.body || {};
 
     if (!srcFiles || srcFiles.length === 0) {
-      throw new AppError('Foto model/tubuh Anda (src_image) wajib diunggah.', 400, 'missing_source_image');
+      throw new AppError('Your model/body photo (src_image) is required.', 400, 'missing_source_image');
     }
 
     const srcFile = srcFiles[0];
     const refFile = refFiles && refFiles.length > 0 ? refFiles[0] : null;
 
     if (!refFile && !ref_image_url) {
-      throw new AppError('Foto referensi baju (ref_image atau ref_image_url) wajib dilampirkan.', 400, 'missing_reference_image');
+      throw new AppError('A clothing reference (ref_image or ref_image_url) is required.', 400, 'missing_reference_image');
     }
 
     const category = garment_category || 'full_body';
     if (!['full_body', 'upper_body', 'lower_body'].includes(category)) {
-      throw new AppError('Kategori pakaian (garment_category) harus salah satu dari: full_body, upper_body, lower_body.', 400, 'invalid_garment_category');
+      throw new AppError('garment_category must be one of: full_body, upper_body, lower_body.', 400, 'invalid_garment_category');
     }
 
     const result = await tryOnClothes({
