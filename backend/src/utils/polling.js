@@ -14,8 +14,9 @@ async function pollTaskStatus(url, headers, { intervalMs = 2000, maxAttempts = 3
     }
 
     if (taskStatus === 'failed' || taskStatus === 'FAILED' || taskStatus === 'error' || taskStatus === 'ERROR') {
-      const errorMsg = data.data?.error_message || data.error?.message || 'Task execution failed';
-      const errorCode = data.data?.error_code || data.error?.code || 'error_failed';
+      const errorObj = data.data?.error;
+      const errorCode = errorObj?.code || 'error_failed';
+      const errorMsg = errorObj?.message || 'Task execution failed';
       const err = new Error(errorMsg);
       err.code = errorCode;
       throw err;
