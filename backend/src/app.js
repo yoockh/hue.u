@@ -3,6 +3,7 @@ const cors = require('cors');
 
 const productsRouter = require('./routes/products.routes');
 const skinAnalysisRouter = require('./routes/skinAnalysis.routes');
+const tryOnRouter = require('./routes/tryOn.routes');
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use('/api/products', productsRouter);
 app.use('/api/analyze-skin', skinAnalysisRouter);
+app.use('/api/try-on', tryOnRouter);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
