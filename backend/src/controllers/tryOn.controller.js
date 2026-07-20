@@ -1,34 +1,26 @@
 const { tryOnClothes } = require('../services/perfectCorp/clothesVto.service');
+const { AppError } = require('../utils/errorHandler');
 
-const tryOn = async (req, res) => {
+const tryOn = async (req, res, next) => {
   try {
     const srcFiles = req.files?.['src_image'];
     const refFiles = req.files?.['ref_image'];
-    const { ref_image_url, garment_category } = req.body;
+    const { ref_image_url, garment_category } = req.body || {};
 
     if (!srcFiles || srcFiles.length === 0) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Foto model/tubuh Anda (src_image) wajib diunggah.'
-      });
+      throw new AppError('Foto model/tubuh Anda (src_image) wajib diunggah.', 400, 'missing_source_image');
     }
 
     const srcFile = srcFiles[0];
     const refFile = refFiles && refFiles.length > 0 ? refFiles[0] : null;
 
     if (!refFile && !ref_image_url) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Foto referensi baju (ref_image atau ref_image_url) wajib dilampirkan.'
-      });
+      throw new AppError('Foto referensi baju (ref_image atau ref_image_url) wajib dilampirkan.', 400, 'missing_reference_image');
     }
 
     const category = garment_category || 'full_body';
     if (!['full_body', 'upper_body', 'lower_body'].includes(category)) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Kategori pakaian (garment_category) harus salah satu dari: full_body, upper_body, lower_body.'
-      });
+      throw new AppError('Kategori pakaian (garment_category) harus salah satu dari: full_body, upper_body, lower_body.', 400, 'invalid_garment_category');
     }
 
     const result = await tryOnClothes({
@@ -43,11 +35,7 @@ const tryOn = async (req, res) => {
       data: result
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      status: 'error',
-      message: error.message || 'Gagal memproses Virtual Try-On pakaian.',
-      code: error.code || 'internal_server_error'
-    });
+    next(error);
   }
 };
 

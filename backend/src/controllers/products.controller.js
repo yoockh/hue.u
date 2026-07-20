@@ -1,6 +1,7 @@
 const products = require('../data/products.json');
+const { AppError } = require('../utils/errorHandler');
 
-const getProducts = (req, res) => {
+const getProducts = (req, res, next) => {
   try {
     const { colors } = req.query;
 
@@ -30,11 +31,7 @@ const getProducts = (req, res) => {
       data: filteredProducts
     });
   } catch (error) {
-    return res.status(500).json({
-      status: 'error',
-      message: 'Failed to retrieve products',
-      error: error.message
-    });
+    next(new AppError('Gagal mengambil data katalog produk.', 500, 'products_fetch_error'));
   }
 };
 

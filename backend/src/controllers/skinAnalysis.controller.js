@@ -3,14 +3,12 @@ const { classifyUndertone } = require('../services/colorLogic/undertoneClassifie
 const { calculateContrast } = require('../services/colorLogic/contrastCalculator');
 const { mapToSeason } = require('../services/colorLogic/seasonMapper');
 const paletteData = require('../services/colorLogic/paletteData');
+const { AppError } = require('../utils/errorHandler');
 
-const analyzeSkin = async (req, res) => {
+const analyzeSkin = async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Foto wajah wajib diunggah.'
-      });
+      throw new AppError('Foto wajah wajib diunggah.', 400, 'missing_file');
     }
 
     // 1. Analyze skin using Perfect Corp API
@@ -46,11 +44,7 @@ const analyzeSkin = async (req, res) => {
       }
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      status: 'error',
-      message: error.message || 'Gagal memproses analisis kulit.',
-      code: error.code || 'internal_server_error'
-    });
+    next(error);
   }
 };
 
