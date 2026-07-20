@@ -4,38 +4,47 @@ const { pollTaskStatus } = require('../../utils/polling');
 const env = require('../../config/env');
 
 const ERROR_MESSAGES = {
-  error_pose: 'Pose tubuh kurang sesuai. Harap berdiri tegak menghadap kamera dengan posisi tubuh penuh terlihat jelas.',
-  error_invalid_ref: 'Foto baju referensi tidak valid atau tidak terdeteksi kategori pakaiannya.',
-  error_invalid_src: 'Foto model/tubuh Anda tidak valid atau sulit diproses.',
-  invalid_parameter: 'Parameter request VTO tidak valid.',
-  error_nsfw_content_detected: 'Konten sensitif/NSFW terdeteksi dalam foto.',
-  error_editing_failed: 'Gagal melakukan editing Virtual Try-On. Silakan coba foto lain.'
+  error_pose: 'Body pose is not suitable. Please stand upright, facing the camera with your full body clearly visible.',
+  error_invalid_ref: 'The clothing reference photo is invalid or its garment category could not be detected.',
+  error_invalid_src: 'Your model/body photo is invalid or could not be processed.',
+  invalid_parameter: 'Invalid VTO request parameter.',
+  error_nsfw_content_detected: 'NSFW content detected in the photo.',
+  error_editing_failed: 'Virtual Try-On editing failed. Please try with a different photo.'
 };
 
 function getReadableError(code) {
-  return ERROR_MESSAGES[code] || `Gagal memproses Virtual Try-On: ${code}`;
+  return ERROR_MESSAGES[code] || `Virtual Try-On processing failed: ${code}`;
 }
 
 async function uploadVtoFile(fileBuffer, fileName, mimeType) {
   const fileResponse = await client.post('/s2s/v2.0/file/cloth-v3', {
-    file_name: fileName,
-    file_type: mimeType
+    files: [
+      {
+        content_type: mimeType,
+        file_name: fileName,
+        file_size: fileBuffer.length
+      }
+    ]
   });
 
   const fileData = fileResponse.data.data;
-  if (!fileData || !fileData.file_id || !fileData.upload_url) {
-    throw new Error('Gagal menginisialisasi upload file VTO ke Perfect Corp.');
+  const fileEntry = fileData?.files?.[0];
+  if (!fileEntry?.file_id || !fileEntry?.requests?.[0]?.url) {
+    throw new Error('Failed to initialize VTO file upload with Perfect Corp.');
   }
 
-  const { file_id: fileId, upload_url: uploadUrl } = fileData;
-  await uploadToS3(uploadUrl, fileBuffer, mimeType);
+  const fileId = fileEntry.file_id;
+  const uploadRequest = fileEntry.requests[0];
+
+  // Upload using presigned URL and exact headers provided by the API
+  await uploadToS3(uploadRequest.url, fileBuffer, uploadRequest.headers);
   return fileId;
 }
 
 async function tryOnClothes({
-  srcFile,       // { buffer, originalname, mimetype }
-  refFile,       // { buffer, originalname, mimetype } OR undefined
-  refFileUrl,    // string URL OR undefined
+  srcFile,        // { buffer, originalname, mimetype }
+  refFile,        // { buffer, originalname, mimetype } OR undefined
+  refFileUrl,     // string URL OR undefined
   garmentCategory // "full_body" | "upper_body" | "lower_body"
 }) {
   try {
@@ -58,26 +67,23 @@ async function tryOnClothes({
 
     // 3. Create the try-on task
     const taskBody = {
+      src_file_id: srcFileId,
       garment_category: garmentCategory
     };
 
-    if (srcFileId) {
-      taskBody.src_file_id = srcFileId;
-    }
-    
     if (refFileId) {
       taskBody.ref_file_id = refFileId;
     } else if (refFileUrl) {
       taskBody.ref_file_url = refFileUrl;
     } else {
-      throw new Error('Foto referensi baju (file atau URL) wajib dilampirkan.');
+      throw new Error('A clothing reference (file or URL) is required.');
     }
 
     const taskResponse = await client.post('/s2s/v2.0/task/cloth-v3', taskBody);
 
     const taskData = taskResponse.data.data;
-    if (!taskData || !taskData.task_id) {
-      throw new Error('Gagal membuat task Virtual Try-On.');
+    if (!taskData?.task_id) {
+      throw new Error('Failed to create Virtual Try-On task.');
     }
 
     const { task_id: taskId } = taskData;
@@ -86,14 +92,14 @@ async function tryOnClothes({
     const pollUrl = `${env.PERFECTCORP_BASE_URL}/s2s/v2.0/task/cloth-v3/${taskId}`;
     const headers = { 'Authorization': `Bearer ${env.PERFECTCORP_API_KEY}` };
 
+    // pollTaskStatus returns response.data, so inner task data lives at .data
     const result = await pollTaskStatus(pollUrl, headers);
-
-    const results = result.data?.results;
-    if (!results || !results.image_url) {
-      throw new Error('Hasil gambar Virtual Try-On tidak ditemukan.');
+    const vtoResults = result.data?.results;
+    if (!vtoResults?.url) {
+      throw new Error('Virtual Try-On result image not found in response.');
     }
 
-    return results;
+    return vtoResults;
   } catch (error) {
     if (error.code) {
       const readableMessage = getReadableError(error.code);

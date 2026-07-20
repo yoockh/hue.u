@@ -8,7 +8,7 @@ const { AppError } = require('../utils/errorHandler');
 const analyzeSkin = async (req, res, next) => {
   try {
     if (!req.file) {
-      throw new AppError('Foto wajah wajib diunggah.', 400, 'missing_file');
+      throw new AppError('A face photo is required.', 400, 'missing_file');
     }
 
     // 1. Analyze skin using Perfect Corp API
