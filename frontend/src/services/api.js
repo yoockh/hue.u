@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://10.0.2.2:5000/api'; // Assuming local backend, 10.0.2.2 for Android Emulator
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -8,7 +8,7 @@ const api = axios.create({
 
 export const analyzeSkin = async (photoUri) => {
   const formData = new FormData();
-  formData.append('photo', {
+  formData.append('image', {
     uri: photoUri,
     type: 'image/jpeg',
     name: 'photo.jpg',
@@ -29,12 +29,12 @@ export const getProducts = async (colors) => {
 
 export const tryOnGarment = async (userPhotoUri, garmentRefUrl, garmentCategory) => {
   const formData = new FormData();
-  formData.append('user_photo', {
+  formData.append('src_image', {
     uri: userPhotoUri,
     type: 'image/jpeg',
     name: 'user_photo.jpg',
   });
-  formData.append('garment_ref_url', garmentRefUrl);
+  formData.append('ref_image_url', garmentRefUrl);
   formData.append('garment_category', garmentCategory);
 
   const response = await api.post('/try-on', formData, {
