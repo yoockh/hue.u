@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -12,6 +13,12 @@ const SkinAnalysisScreen = ({ navigation }) => {
   const { setAnalysisResult } = useContext(AnalysisContext);
 
   const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'We need permission to access your camera roll.');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
@@ -20,7 +27,12 @@ const SkinAnalysisScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      setPhotoUri(result.assets[0].uri);
+      const manipResult = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 800 } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      setPhotoUri(manipResult.uri);
     }
   };
 

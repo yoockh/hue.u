@@ -10,7 +10,9 @@ const AnalysisResultScreen = ({ navigation }) => {
     return <View style={styles.container}><Text>No analysis data found.</Text></View>;
   }
 
-  const { skin_color, eye_color, hair_color, undertone, season, palette } = analysisResult;
+  const { classification, recommendations, analysis } = analysisResult.data;
+  const { season, undertone } = classification;
+  const palette = recommendations.palette;
 
   return (
     <ScrollView style={styles.container}>
@@ -25,8 +27,8 @@ const AnalysisResultScreen = ({ navigation }) => {
       <View style={styles.paletteContainer}>
         {palette && palette.map((color, index) => (
           <View key={index} style={styles.colorItem}>
-            <ColorSwatch color={color} size={50} />
-            <Text style={styles.colorText}>{color}</Text>
+            <ColorSwatch color={color.hex} size={50} />
+            <Text style={styles.colorText}>{color.name}</Text>
           </View>
         ))}
       </View>

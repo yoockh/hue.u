@@ -7,7 +7,7 @@ const ProductCard = ({ product, onPress }) => (
     <Image source={{ uri: product.image_url || 'https://via.placeholder.com/150' }} style={styles.image} />
     <View style={styles.info}>
       <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
-      <Text style={styles.price}>${product.price}</Text>
+      {product.price ? <Text style={styles.price}>${product.price}</Text> : null}
     </View>
   </TouchableOpacity>
 );

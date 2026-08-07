@@ -4,7 +4,18 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 90000,
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
+      error.message = 'The request timed out. Please try again later.';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const analyzeSkin = async (photoUri) => {
   const formData = new FormData();
