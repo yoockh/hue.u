@@ -1,4 +1,5 @@
 const client = require('./client');
+const { getAccessToken } = require('./auth.service');
 const { uploadToS3 } = require('../../utils/fileUpload');
 const { pollTaskStatus } = require('../../utils/polling');
 const env = require('../../config/env');
@@ -57,7 +58,7 @@ async function analyzeSkinTone(fileBuffer, fileName, mimeType) {
 
     // 4. Poll the task until it succeeds or fails
     const pollUrl = `${env.PERFECTCORP_BASE_URL}/s2s/v2.0/task/skin-tone-analysis/${taskId}`;
-    const headers = { 'Authorization': `Bearer ${env.PERFECTCORP_API_KEY}` };
+    const headers = { 'Authorization': `Bearer ${await getAccessToken()}` };
 
     // pollTaskStatus returns response.data, so inner task data lives at .data
     const result = await pollTaskStatus(pollUrl, headers);
