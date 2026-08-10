@@ -19,34 +19,39 @@ function getReadableError(code) {
   return ERROR_MESSAGES[code] || `Failed to analyze face photo: ${code}`;
 }
 
-async function analyzeSkinTone(fileBuffer, fileName, mimeType) {
+async function analyzeSkinTone(fileBuffer, fileName, mimeType, srcFileId) {
   try {
-    // 1. Request upload URL and file ID
-    const fileResponse = await client.post('/s2s/v2.0/file', {
-      files: [
-        {
-          content_type: mimeType,
-          file_name: fileName,
-          file_size: fileBuffer.length
-        }
-      ]
-    });
+    // 1. Resolve the source file id. When the caller already has a file id from a
+    //    previous task (e.g. a dst_id), reuse it and skip the upload round-trip.
+    let resolvedSrcId = srcFileId;
+    if (!resolvedSrcId) {
+      // Request upload URL and file ID
+      const fileResponse = await client.post('/s2s/v2.0/file', {
+        files: [
+          {
+            content_type: mimeType,
+            file_name: fileName,
+            file_size: fileBuffer.length
+          }
+        ]
+      });
 
-    const fileData = fileResponse.data.data;
-    const fileEntry = fileData?.files?.[0];
-    if (!fileEntry?.file_id || !fileEntry?.requests?.[0]?.url) {
-      throw new Error('Failed to initialize file upload with Perfect Corp.');
+      const fileData = fileResponse.data.data;
+      const fileEntry = fileData?.files?.[0];
+      if (!fileEntry?.file_id || !fileEntry?.requests?.[0]?.url) {
+        throw new Error('Failed to initialize file upload with Perfect Corp.');
+      }
+
+      resolvedSrcId = fileEntry.file_id;
+      const uploadRequest = fileEntry.requests[0];
+
+      // Upload file directly to S3 using the presigned URL and headers from the API
+      await uploadToS3(uploadRequest.url, fileBuffer, uploadRequest.headers);
     }
 
-    const fileId = fileEntry.file_id;
-    const uploadRequest = fileEntry.requests[0];
-
-    // 2. Upload file directly to S3 using the presigned URL and headers from the API
-    await uploadToS3(uploadRequest.url, fileBuffer, uploadRequest.headers);
-
-    // 3. Create the skin tone analysis task
+    // 2. Create the skin tone analysis task
     const taskResponse = await client.post('/s2s/v2.0/task/skin-tone-analysis', {
-      src_file_id: fileId
+      src_file_id: resolvedSrcId
     });
 
     const taskData = taskResponse.data.data;
@@ -67,7 +72,14 @@ async function analyzeSkinTone(fileBuffer, fileName, mimeType) {
       throw new Error('Skin color analysis results not found in response.');
     }
 
-    return colorResults;
+    // Surface the reusable file ids alongside the color analysis so the same
+    // photo can be chained into a follow-up task (e.g. a try-on) without being
+    // re-uploaded. dst_id is included when the API returns one.
+    return {
+      ...colorResults,
+      src_file_id: resolvedSrcId,
+      dst_id: result.data?.results?.dst_id
+    };
   } catch (error) {
     if (error.code) {
       const readableMessage = getReadableError(error.code);

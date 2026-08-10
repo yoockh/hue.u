@@ -43,23 +43,33 @@ async function uploadVtoFile(fileBuffer, fileName, mimeType) {
 }
 
 async function tryOnClothes({
-  srcFile,        // { buffer, originalname, mimetype }
+  srcFile,        // { buffer, originalname, mimetype } OR undefined
+  srcFileId,      // reuse an already-uploaded/processed file id (e.g. a prior dst_id) OR undefined
   refFile,        // { buffer, originalname, mimetype } OR undefined
+  refFileId,      // reuse an already-uploaded reference file id OR undefined
   refFileUrl,     // string URL OR undefined
   garmentCategory // "full_body" | "upper_body" | "lower_body"
 }) {
   try {
-    // 1. Upload model/source image
-    const srcFileId = await uploadVtoFile(
-      srcFile.buffer,
-      srcFile.originalname,
-      srcFile.mimetype
-    );
+    // 1. Resolve the source (model/body) file id. Reusing an existing upload lets
+    //    repeated try-ons on the same photo skip the upload round-trip.
+    let resolvedSrcId = srcFileId;
+    if (!resolvedSrcId) {
+      if (!srcFile || !srcFile.buffer) {
+        throw new Error('A source image (file or src_file_id) is required.');
+      }
+      resolvedSrcId = await uploadVtoFile(
+        srcFile.buffer,
+        srcFile.originalname,
+        srcFile.mimetype
+      );
+    }
 
-    // 2. Determine reference file id or url
-    let refFileId;
-    if (refFile && refFile.buffer) {
-      refFileId = await uploadVtoFile(
+    // 2. Determine reference file id or url, reusing an existing reference upload
+    //    when one is provided.
+    let resolvedRefId = refFileId;
+    if (!resolvedRefId && refFile && refFile.buffer) {
+      resolvedRefId = await uploadVtoFile(
         refFile.buffer,
         refFile.originalname,
         refFile.mimetype
@@ -68,16 +78,16 @@ async function tryOnClothes({
 
     // 3. Create the try-on task
     const taskBody = {
-      src_file_id: srcFileId,
+      src_file_id: resolvedSrcId,
       garment_category: garmentCategory
     };
 
-    if (refFileId) {
-      taskBody.ref_file_id = refFileId;
+    if (resolvedRefId) {
+      taskBody.ref_file_id = resolvedRefId;
     } else if (refFileUrl) {
       taskBody.ref_file_url = refFileUrl;
     } else {
-      throw new Error('A clothing reference (file or URL) is required.');
+      throw new Error('A clothing reference (file, file id, or URL) is required.');
     }
 
     const taskResponse = await client.post('/s2s/v2.0/task/cloth-v3', taskBody);
@@ -100,7 +110,14 @@ async function tryOnClothes({
       throw new Error('Virtual Try-On result image not found in response.');
     }
 
-    return vtoResults;
+    // Echo the reusable source file id (and the API-provided dst_id inside
+    // vtoResults) so the caller can chain another task without re-uploading:
+    // src_file_id for a different garment on the same body, dst_id (the generated
+    // image) as the source of a further edit.
+    return {
+      ...vtoResults,
+      src_file_id: resolvedSrcId
+    };
   } catch (error) {
     if (error.code) {
       const readableMessage = getReadableError(error.code);
