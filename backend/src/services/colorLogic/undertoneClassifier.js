@@ -1,37 +1,24 @@
 function classifyUndertone(hexColor) {
   const cleanHex = hexColor.replace('#', '');
   const r = parseInt(cleanHex.substring(0, 2), 16);
-  const g = parseInt(cleanHex.substring(2, 4), 16);
   const b = parseInt(cleanHex.substring(4, 6), 16);
 
-  const rNorm = r / 255;
-  const gNorm = g / 255;
-  const bNorm = b / 255;
+  // Skin undertone is best read from how much the red (warm) channel leads the
+  // blue (cool) channel. An HSV hue angle is a poor fit: almost every skin tone
+  // lands in the narrow 20-40 degree orange band, so the previous 6-degree
+  // neutral window classified nearly everyone as "warm".
+  //
+  // NOTE: these thresholds are first-pass estimates. They should be calibrated
+  // against a labelled dataset of real skin swatches (or replaced with a Lab /
+  // ITA-based measure) before relying on the boundaries.
+  const warmth = r - b;
 
-  const max = Math.max(rNorm, gNorm, bNorm);
-  const min = Math.min(rNorm, gNorm, bNorm);
-  const delta = max - min;
-
-  let hue = 0;
-  if (delta !== 0) {
-    if (max === rNorm) {
-      hue = ((gNorm - bNorm) / delta) % 6;
-    } else if (max === gNorm) {
-      hue = (bNorm - rNorm) / delta + 2;
-    } else {
-      hue = (rNorm - gNorm) / delta + 4;
-    }
-    hue = Math.round(hue * 60);
-    if (hue < 0) hue += 360;
-  }
-
-  if (hue < 22) {
+  if (warmth < 30) {
     return 'cool';
-  } else if (hue > 28) {
+  } else if (warmth > 60) {
     return 'warm';
-  } else {
-    return 'neutral';
   }
+  return 'neutral';
 }
 
 module.exports = { classifyUndertone };
