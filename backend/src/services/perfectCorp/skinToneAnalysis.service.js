@@ -21,7 +21,7 @@ function getReadableError(code) {
 async function analyzeSkinTone(fileBuffer, fileName, mimeType) {
   try {
     // 1. Request upload URL and file ID
-    const fileResponse = await client.post('/s2s/v2.0/file/skin-tone-analysis', {
+    const fileResponse = await client.post('/s2s/v2.0/file', {
       files: [
         {
           content_type: mimeType,

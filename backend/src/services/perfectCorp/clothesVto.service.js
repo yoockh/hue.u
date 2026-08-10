@@ -17,7 +17,7 @@ function getReadableError(code) {
 }
 
 async function uploadVtoFile(fileBuffer, fileName, mimeType) {
-  const fileResponse = await client.post('/s2s/v2.0/file/cloth-v3', {
+  const fileResponse = await client.post('/s2s/v2.0/file', {
     files: [
       {
         content_type: mimeType,
