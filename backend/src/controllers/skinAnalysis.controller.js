@@ -2,6 +2,7 @@ const { analyzeSkinTone } = require('../services/perfectCorp/skinToneAnalysis.se
 const { classifyUndertone } = require('../services/colorLogic/undertoneClassifier');
 const { calculateContrast } = require('../services/colorLogic/contrastCalculator');
 const { mapToSeason } = require('../services/colorLogic/seasonMapper');
+const { buildExplanation } = require('../services/colorLogic/explanationBuilder');
 const paletteData = require('../services/colorLogic/paletteData');
 const { AppError } = require('../utils/errorHandler');
 
@@ -27,6 +28,7 @@ const analyzeSkin = async (req, res, next) => {
     );
     const season = mapToSeason(undertone, contrast);
     const recommendations = paletteData[season] || [];
+    const explanation = buildExplanation(season, undertone, contrast);
 
     // 3. Construct and return final response
     return res.status(200).json({
@@ -39,7 +41,8 @@ const analyzeSkin = async (req, res, next) => {
           season
         },
         recommendations: {
-          palette: recommendations
+          palette: recommendations,
+          explanation
         }
       }
     });
