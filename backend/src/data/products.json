@@ -1,146 +1,178 @@
 [
   {
     "id": 1,
-    "name": "Peach Coral Tee",
-    "image_url": "https://example.com/images/peach_coral_tee.jpg",
-    "dominant_color": "coral",
+    "name": "Coral Linen Shirt",
     "season": "spring",
-    "garment_category": "upper_body"
+    "color_name": "Coral",
+    "color_hex": "#FF7F50",
+    "price": 32.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/coral-linen-shirt.jpg"
   },
   {
     "id": 2,
-    "name": "Mustard Summer Dress",
-    "image_url": "https://example.com/images/mustard_dress.jpg",
-    "dominant_color": "mustard",
-    "season": "autumn",
-    "garment_category": "full_body"
+    "name": "Butter Yellow Sundress",
+    "season": "spring",
+    "color_name": "Butter Yellow",
+    "color_hex": "#FFFDD0",
+    "price": 58.0,
+    "currency": "USD",
+    "garment_category": "full_body",
+    "image_url": "https://cdn.hue-u.example/products/butter-yellow-sundress.jpg"
   },
   {
     "id": 3,
-    "name": "Rust Corduroy Pants",
-    "image_url": "https://example.com/images/rust_pants.jpg",
-    "dominant_color": "rust",
-    "season": "autumn",
-    "garment_category": "lower_body"
+    "name": "Peach Chino Shorts",
+    "season": "spring",
+    "color_name": "Peach",
+    "color_hex": "#FFDAB9",
+    "price": 39.0,
+    "currency": "USD",
+    "garment_category": "lower_body",
+    "image_url": "https://cdn.hue-u.example/products/peach-chino-shorts.jpg"
   },
   {
     "id": 4,
-    "name": "Olive Green Utility Jacket",
-    "image_url": "https://example.com/images/olive_jacket.jpg",
-    "dominant_color": "olive",
-    "season": "autumn",
-    "garment_category": "upper_body"
+    "name": "Warm Gold Knit Top",
+    "season": "spring",
+    "color_name": "Warm Gold",
+    "color_hex": "#DAA520",
+    "price": 45.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/warm-gold-knit-top.jpg"
   },
   {
     "id": 5,
-    "name": "Emerald Satin Gown",
-    "image_url": "https://example.com/images/emerald_gown.jpg",
-    "dominant_color": "emerald",
-    "season": "winter",
-    "garment_category": "full_body"
+    "name": "Powder Blue Oxford Shirt",
+    "season": "summer",
+    "color_name": "Powder Blue",
+    "color_hex": "#B0E0E6",
+    "price": 42.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/powder-blue-oxford-shirt.jpg"
   },
   {
     "id": 6,
-    "name": "Royal Blue Wool Blazer",
-    "image_url": "https://example.com/images/royal_blue_blazer.jpg",
-    "dominant_color": "royal_blue",
-    "season": "winter",
-    "garment_category": "upper_body"
+    "name": "Lavender Pleated Skirt",
+    "season": "summer",
+    "color_name": "Lavender",
+    "color_hex": "#E6E6FA",
+    "price": 36.0,
+    "currency": "USD",
+    "garment_category": "lower_body",
+    "image_url": "https://cdn.hue-u.example/products/lavender-pleated-skirt.jpg"
   },
   {
     "id": 7,
-    "name": "Jet Black Chino Pants",
-    "image_url": "https://example.com/images/black_chino.jpg",
-    "dominant_color": "black",
-    "season": "winter",
-    "garment_category": "lower_body"
+    "name": "Rose Pink Wrap Dress",
+    "season": "summer",
+    "color_name": "Rose Pink",
+    "color_hex": "#FFC0CB",
+    "price": 62.0,
+    "currency": "USD",
+    "garment_category": "full_body",
+    "image_url": "https://cdn.hue-u.example/products/rose-pink-wrap-dress.jpg"
   },
   {
     "id": 8,
-    "name": "Powder Blue Knit Sweater",
-    "image_url": "https://example.com/images/powder_blue_sweater.jpg",
-    "dominant_color": "powder_blue",
+    "name": "Slate Gray Tailored Trousers",
     "season": "summer",
-    "garment_category": "upper_body"
+    "color_name": "Slate Gray",
+    "color_hex": "#708090",
+    "price": 54.0,
+    "currency": "USD",
+    "garment_category": "lower_body",
+    "image_url": "https://cdn.hue-u.example/products/slate-gray-trousers.jpg"
   },
   {
     "id": 9,
-    "name": "Lavender Pleated Skirt",
-    "image_url": "https://example.com/images/lavender_skirt.jpg",
-    "dominant_color": "lavender",
-    "season": "summer",
-    "garment_category": "lower_body"
+    "name": "Rust Corduroy Jacket",
+    "season": "autumn",
+    "color_name": "Rust Orange",
+    "color_hex": "#B7410E",
+    "price": 78.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/rust-corduroy-jacket.jpg"
   },
   {
     "id": 10,
-    "name": "Terracotta Casual Romper",
-    "image_url": "https://example.com/images/terracotta_romper.jpg",
-    "dominant_color": "terracotta",
+    "name": "Olive Utility Trousers",
     "season": "autumn",
-    "garment_category": "full_body"
+    "color_name": "Olive Green",
+    "color_hex": "#808000",
+    "price": 49.0,
+    "currency": "USD",
+    "garment_category": "lower_body",
+    "image_url": "https://cdn.hue-u.example/products/olive-utility-trousers.jpg"
   },
   {
     "id": 11,
-    "name": "Ruby Red Velvet Suit",
-    "image_url": "https://example.com/images/ruby_red_suit.jpg",
-    "dominant_color": "ruby_red",
-    "season": "winter",
-    "garment_category": "full_body"
+    "name": "Mustard Knit Sweater",
+    "season": "autumn",
+    "color_name": "Mustard Yellow",
+    "color_hex": "#E1AD01",
+    "price": 46.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/mustard-knit-sweater.jpg"
   },
   {
     "id": 12,
-    "name": "Forest Green Cargo Trousers",
-    "image_url": "https://example.com/images/forest_green_cargo.jpg",
-    "dominant_color": "forest_green",
+    "name": "Terracotta Maxi Dress",
     "season": "autumn",
-    "garment_category": "lower_body"
+    "color_name": "Terracotta",
+    "color_hex": "#E2725B",
+    "price": 64.0,
+    "currency": "USD",
+    "garment_category": "full_body",
+    "image_url": "https://cdn.hue-u.example/products/terracotta-maxi-dress.jpg"
   },
   {
     "id": 13,
-    "name": "Burnt Orange Ribbed Top",
-    "image_url": "https://example.com/images/burnt_orange_top.jpg",
-    "dominant_color": "burnt_orange",
-    "season": "autumn",
-    "garment_category": "upper_body"
+    "name": "Royal Blue Blazer",
+    "season": "winter",
+    "color_name": "Royal Blue",
+    "color_hex": "#4169E1",
+    "price": 89.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/royal-blue-blazer.jpg"
   },
   {
     "id": 14,
-    "name": "Slate Gray Denim Shorts",
-    "image_url": "https://example.com/images/slate_gray_shorts.jpg",
-    "dominant_color": "slate_gray",
-    "season": "summer",
-    "garment_category": "lower_body"
+    "name": "Emerald Satin Gown",
+    "season": "winter",
+    "color_name": "Emerald Green",
+    "color_hex": "#50C878",
+    "price": 95.0,
+    "currency": "USD",
+    "garment_category": "full_body",
+    "image_url": "https://cdn.hue-u.example/products/emerald-satin-gown.jpg"
   },
   {
     "id": 15,
-    "name": "Pure White Linen Shirtdress",
-    "image_url": "https://example.com/images/white_shirtdress.jpg",
-    "dominant_color": "white",
+    "name": "Jet Black Slim Jeans",
     "season": "winter",
-    "garment_category": "full_body"
+    "color_name": "Jet Black",
+    "color_hex": "#0A0A0A",
+    "price": 52.0,
+    "currency": "USD",
+    "garment_category": "lower_body",
+    "image_url": "https://cdn.hue-u.example/products/jet-black-slim-jeans.jpg"
   },
   {
     "id": 16,
-    "name": "Chocolate Brown Cardigan",
-    "image_url": "https://example.com/images/chocolate_cardigan.jpg",
-    "dominant_color": "chocolate_brown",
-    "season": "autumn",
-    "garment_category": "upper_body"
-  },
-  {
-    "id": 17,
-    "name": "Hot Pink Cocktail Dress",
-    "image_url": "https://example.com/images/hot_pink_dress.jpg",
-    "dominant_color": "hot_pink",
+    "name": "Ruby Red Turtleneck",
     "season": "winter",
-    "garment_category": "full_body"
-  },
-  {
-    "id": 18,
-    "name": "Cobalt Blue Track Pants",
-    "image_url": "https://example.com/images/cobalt_pants.jpg",
-    "dominant_color": "cobalt_blue",
-    "season": "winter",
-    "garment_category": "lower_body"
+    "color_name": "Ruby Red",
+    "color_hex": "#E0115F",
+    "price": 44.0,
+    "currency": "USD",
+    "garment_category": "upper_body",
+    "image_url": "https://cdn.hue-u.example/products/ruby-red-turtleneck.jpg"
   }
 ]
