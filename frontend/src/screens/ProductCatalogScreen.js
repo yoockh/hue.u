@@ -12,9 +12,9 @@ const ProductCatalogScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const colors = analysisResult?.palette || [];
-        const result = await getProducts(colors);
-        setProducts(result);
+        const season = analysisResult?.data?.classification?.season;
+        const result = await getProducts(season);
+        setProducts(result?.data || []);
       } catch (e) {
         console.error('Failed to fetch products', e);
       } finally {

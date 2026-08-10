@@ -31,9 +31,9 @@ export const analyzeSkin = async (photoUri) => {
   return response.data;
 };
 
-export const getProducts = async (colors) => {
+export const getProducts = async (season) => {
   const response = await api.get('/products', {
-    params: { colors: colors.join(',') }
+    params: season ? { season } : {},
   });
   return response.data;
 };

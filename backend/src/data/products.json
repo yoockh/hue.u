@@ -4,6 +4,7 @@
     "name": "Peach Coral Tee",
     "image_url": "https://example.com/images/peach_coral_tee.jpg",
     "dominant_color": "coral",
+    "season": "spring",
     "garment_category": "upper_body"
   },
   {
@@ -11,6 +12,7 @@
     "name": "Mustard Summer Dress",
     "image_url": "https://example.com/images/mustard_dress.jpg",
     "dominant_color": "mustard",
+    "season": "autumn",
     "garment_category": "full_body"
   },
   {
@@ -18,6 +20,7 @@
     "name": "Rust Corduroy Pants",
     "image_url": "https://example.com/images/rust_pants.jpg",
     "dominant_color": "rust",
+    "season": "autumn",
     "garment_category": "lower_body"
   },
   {
@@ -25,6 +28,7 @@
     "name": "Olive Green Utility Jacket",
     "image_url": "https://example.com/images/olive_jacket.jpg",
     "dominant_color": "olive",
+    "season": "autumn",
     "garment_category": "upper_body"
   },
   {
@@ -32,6 +36,7 @@
     "name": "Emerald Satin Gown",
     "image_url": "https://example.com/images/emerald_gown.jpg",
     "dominant_color": "emerald",
+    "season": "winter",
     "garment_category": "full_body"
   },
   {
@@ -39,6 +44,7 @@
     "name": "Royal Blue Wool Blazer",
     "image_url": "https://example.com/images/royal_blue_blazer.jpg",
     "dominant_color": "royal_blue",
+    "season": "winter",
     "garment_category": "upper_body"
   },
   {
@@ -46,6 +52,7 @@
     "name": "Jet Black Chino Pants",
     "image_url": "https://example.com/images/black_chino.jpg",
     "dominant_color": "black",
+    "season": "winter",
     "garment_category": "lower_body"
   },
   {
@@ -53,6 +60,7 @@
     "name": "Powder Blue Knit Sweater",
     "image_url": "https://example.com/images/powder_blue_sweater.jpg",
     "dominant_color": "powder_blue",
+    "season": "summer",
     "garment_category": "upper_body"
   },
   {
@@ -60,6 +68,7 @@
     "name": "Lavender Pleated Skirt",
     "image_url": "https://example.com/images/lavender_skirt.jpg",
     "dominant_color": "lavender",
+    "season": "summer",
     "garment_category": "lower_body"
   },
   {
@@ -67,6 +76,7 @@
     "name": "Terracotta Casual Romper",
     "image_url": "https://example.com/images/terracotta_romper.jpg",
     "dominant_color": "terracotta",
+    "season": "autumn",
     "garment_category": "full_body"
   },
   {
@@ -74,6 +84,7 @@
     "name": "Ruby Red Velvet Suit",
     "image_url": "https://example.com/images/ruby_red_suit.jpg",
     "dominant_color": "ruby_red",
+    "season": "winter",
     "garment_category": "full_body"
   },
   {
@@ -81,6 +92,7 @@
     "name": "Forest Green Cargo Trousers",
     "image_url": "https://example.com/images/forest_green_cargo.jpg",
     "dominant_color": "forest_green",
+    "season": "autumn",
     "garment_category": "lower_body"
   },
   {
@@ -88,6 +100,7 @@
     "name": "Burnt Orange Ribbed Top",
     "image_url": "https://example.com/images/burnt_orange_top.jpg",
     "dominant_color": "burnt_orange",
+    "season": "autumn",
     "garment_category": "upper_body"
   },
   {
@@ -95,6 +108,7 @@
     "name": "Slate Gray Denim Shorts",
     "image_url": "https://example.com/images/slate_gray_shorts.jpg",
     "dominant_color": "slate_gray",
+    "season": "summer",
     "garment_category": "lower_body"
   },
   {
@@ -102,6 +116,7 @@
     "name": "Pure White Linen Shirtdress",
     "image_url": "https://example.com/images/white_shirtdress.jpg",
     "dominant_color": "white",
+    "season": "winter",
     "garment_category": "full_body"
   },
   {
@@ -109,6 +124,7 @@
     "name": "Chocolate Brown Cardigan",
     "image_url": "https://example.com/images/chocolate_cardigan.jpg",
     "dominant_color": "chocolate_brown",
+    "season": "autumn",
     "garment_category": "upper_body"
   },
   {
@@ -116,6 +132,7 @@
     "name": "Hot Pink Cocktail Dress",
     "image_url": "https://example.com/images/hot_pink_dress.jpg",
     "dominant_color": "hot_pink",
+    "season": "winter",
     "garment_category": "full_body"
   },
   {
@@ -123,6 +140,7 @@
     "name": "Cobalt Blue Track Pants",
     "image_url": "https://example.com/images/cobalt_pants.jpg",
     "dominant_color": "cobalt_blue",
+    "season": "winter",
     "garment_category": "lower_body"
   }
 ]
