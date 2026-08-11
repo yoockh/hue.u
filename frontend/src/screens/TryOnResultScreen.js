@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, Image, Button, Text } from 'react-native';
+import { View, StyleSheet, Image, Text } from 'react-native';
 import { AnalysisContext } from '../context/AnalysisContext';
-import colors from '../constants/colors';
+import AppButton from '../components/AppButton';
 
 const TryOnResultScreen = ({ route, navigation }) => {
-  const { resultImageUrl } = route.params || {};
+  const { resultImageUrl, originalPhotoUri } = route.params || {};
   const { setAnalysisResult, setSelectedProduct } = useContext(AnalysisContext);
 
   const handleStartOver = () => {
@@ -16,7 +16,20 @@ const TryOnResultScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       {resultImageUrl ? (
-        <Image source={{ uri: resultImageUrl }} style={styles.image} resizeMode="contain" />
+        originalPhotoUri ? (
+          <View style={styles.compareRow}>
+            <View style={styles.compareColumn}>
+              <Text style={styles.compareLabel}>Before</Text>
+              <Image source={{ uri: originalPhotoUri }} style={styles.compareImage} resizeMode="cover" />
+            </View>
+            <View style={styles.compareColumn}>
+              <Text style={styles.compareLabel}>After</Text>
+              <Image source={{ uri: resultImageUrl }} style={styles.compareImage} resizeMode="cover" />
+            </View>
+          </View>
+        ) : (
+          <Image source={{ uri: resultImageUrl }} style={styles.image} resizeMode="contain" />
+        )
       ) : (
         <View style={styles.placeholder}>
           <Text>No result image provided.</Text>
@@ -24,9 +37,9 @@ const TryOnResultScreen = ({ route, navigation }) => {
       )}
 
       <View style={styles.controls}>
-        <Button title="Back to Catalog" onPress={() => navigation.navigate('ProductCatalog')} />
+        <AppButton title="Back to Catalog" variant="secondary" onPress={() => navigation.navigate('ProductCatalog')} />
         <View style={{ height: 10 }} />
-        <Button title="Start Over" onPress={handleStartOver} color={colors.error} />
+        <AppButton title="Start Over" variant="danger" onPress={handleStartOver} />
       </View>
     </View>
   );
@@ -35,6 +48,16 @@ const TryOnResultScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   image: { flex: 1, width: '100%' },
+  compareRow: { flex: 1, flexDirection: 'row' },
+  compareColumn: { flex: 1 },
+  compareLabel: {
+    textAlign: 'center',
+    paddingVertical: 6,
+    fontWeight: '600',
+    color: '#666',
+    backgroundColor: '#F2F2F7',
+  },
+  compareImage: { flex: 1, width: '100%' },
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   controls: { padding: 16, paddingBottom: 30 }
 });

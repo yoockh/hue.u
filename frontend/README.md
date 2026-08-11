@@ -150,11 +150,15 @@ Holds `analysisResult` (the full `analyze-skin` response) and `selectedProduct` 
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|:--------:|-------------|
-| `EXPO_PUBLIC_API_URL` | ⬜ | Base URL (including `/api`) of the Hue.U backend, e.g. `http://192.168.1.23:5000/api`. Defaults to `http://10.0.2.2:5000/api`, which only resolves on the **Android emulator** (its alias for the host machine's `localhost`). Must be set explicitly for iOS simulators, web, or a physical device — see below. |
+The backend base URL is resolved in `src/services/api.js` in this order (first one set wins):
 
-Expo automatically inlines any `EXPO_PUBLIC_*` variable at build time; no `.env` loader is required in the app code. Set it via a `.env` file at the `frontend/` root (picked up by Expo CLI) or by exporting it in your shell before running `expo start`.
+| # | Source | Required | Description |
+|---|--------|:--------:|-------------|
+| 1 | `EXPO_PUBLIC_API_URL` env var | ⬜ | Base URL (including `/api`) of the Hue.U backend, e.g. `http://192.168.1.23:5000/api`. Expo automatically inlines any `EXPO_PUBLIC_*` variable at build time — set it via a `.env` file at the `frontend/` root (picked up by Expo CLI) or by exporting it in your shell before running `expo start`. Intended for day-to-day local development. |
+| 2 | `expo.extra.apiUrl` in `app.json` | ⬜ | Lets a **built app** point at a different backend (e.g. a staging/production deployment) purely by editing config — no source change or env var needed. Useful for a teammate demoing on a physical device from a build they didn't compile themselves. `null` by default (skipped). |
+| 3 | hardcoded fallback | — | `http://10.0.2.2:5000/api`, which only resolves on the **Android emulator** (its alias for the host machine's `localhost`). |
+
+Neither #1 nor #2 resolves automatically for iOS simulators, web, or a physical device — set one of them explicitly. See below for picking the right host.
 
 ---
 
