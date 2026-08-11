@@ -52,9 +52,9 @@ const UploadFullBodyScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.controls}>
-        <Button title="Choose Photo" onPress={pickImage} />
+        <Button title="Choose Photo" onPress={pickImage} disabled={loading} />
         <View style={{ height: 10 }} />
-        <Button title="See Try-On" onPress={handleTryOn} disabled={!photoUri} color="#007AFF" />
+        <Button title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} color="#007AFF" />
       </View>
     </View>
   );

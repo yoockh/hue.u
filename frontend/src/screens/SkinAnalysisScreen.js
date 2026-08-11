@@ -63,9 +63,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.controls}>
-        <Button title="Choose Photo" onPress={pickImage} />
+        <Button title="Choose Photo" onPress={pickImage} disabled={loading} />
         <View style={{ height: 10 }} />
-        <Button title="Analyze" onPress={handleAnalyze} disabled={!photoUri} />
+        <Button title="Analyze" onPress={handleAnalyze} disabled={!photoUri || loading} />
       </View>
     </View>
   );
