@@ -28,8 +28,7 @@ const UploadFullBodyScreen = ({ navigation }) => {
 
     try {
       const result = await performTryOn(photoUri, selectedProduct.image_url, selectedProduct.garment_category);
-      // Assuming result contains result_image_url
-      navigation.navigate('TryOnResult', { resultImageUrl: result.result_image_url });
+      navigation.navigate('TryOnResult', { resultImageUrl: result.data.url });
     } catch (e) {
       Alert.alert('Try-On Failed', e.message);
     }
