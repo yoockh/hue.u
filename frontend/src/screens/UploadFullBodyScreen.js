@@ -27,7 +27,7 @@ const UploadFullBodyScreen = ({ navigation }) => {
     if (!selectedProduct) return Alert.alert('Error', 'No product selected');
 
     try {
-      const result = await performTryOn(photoUri, selectedProduct.image_url, selectedProduct.category);
+      const result = await performTryOn(photoUri, selectedProduct.image_url, selectedProduct.garment_category);
       // Assuming result contains result_image_url
       navigation.navigate('TryOnResult', { resultImageUrl: result.result_image_url });
     } catch (e) {
