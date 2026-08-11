@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { AnalysisContext } from '../context/AnalysisContext';
 import ColorSwatch from '../components/ColorSwatch';
+import colors from '../constants/colors';
 
 const AnalysisResultScreen = ({ navigation }) => {
   const { analysisResult } = useContext(AnalysisContext);
@@ -44,7 +45,7 @@ const AnalysisResultScreen = ({ navigation }) => {
       <Button 
         title="View Recommended Products" 
         onPress={() => navigation.navigate('ProductCatalog')}
-        color="#007AFF"
+        color={colors.primary}
       />
     </ScrollView>
   );

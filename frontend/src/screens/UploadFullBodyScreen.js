@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useTryOn } from '../hooks/useTryOn';
+import colors from '../constants/colors';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const UploadFullBodyScreen = ({ navigation }) => {
@@ -54,7 +55,7 @@ const UploadFullBodyScreen = ({ navigation }) => {
       <View style={styles.controls}>
         <Button title="Choose Photo" onPress={pickImage} disabled={loading} />
         <View style={{ height: 10 }} />
-        <Button title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} color="#007AFF" />
+        <Button title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} color={colors.primary} />
       </View>
     </View>
   );
