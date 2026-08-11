@@ -26,6 +26,9 @@ const AnalysisResultScreen = ({ navigation }) => {
       <View style={styles.card}>
         <Text style={styles.label}>Season: <Text style={styles.value}>{season}</Text></Text>
         <Text style={styles.label}>Undertone: <Text style={styles.value}>{undertone}</Text></Text>
+        {recommendations.explanation ? (
+          <Text style={styles.explanation}>{recommendations.explanation}</Text>
+        ) : null}
       </View>
 
       <Text style={styles.sectionTitle}>Your Perfect Palette</Text>
@@ -55,6 +58,7 @@ const styles = StyleSheet.create({
   card: { padding: 16, backgroundColor: '#f8f8f8', borderRadius: 8, marginBottom: 20 },
   label: { fontSize: 16, color: '#666', marginBottom: 8 },
   value: { color: '#000', fontWeight: 'bold' },
+  explanation: { fontSize: 14, color: '#444', marginTop: 8, lineHeight: 20 },
   sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
   paletteContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 30 },
   colorItem: { alignItems: 'center', margin: 8 },
