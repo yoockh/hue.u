@@ -12,6 +12,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
       error.message = 'The request timed out. Please try again later.';
+    } else if (error.response?.data?.message) {
+      // Surface the backend's readable message (e.g. "Face not detected...")
+      // instead of axios's generic "Request failed with status code 400".
+      error.message = error.response.data.message;
+    } else if (!error.response) {
+      error.message = 'Network error. Please check your connection and try again.';
     }
     return Promise.reject(error);
   }
