@@ -1,11 +1,16 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useContext, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import ViewShot from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { AnalysisContext } from '../context/AnalysisContext';
 import ColorSwatch from '../components/ColorSwatch';
+import ColorCard from '../components/ColorCard';
 import AppButton from '../components/AppButton';
 
 const AnalysisResultScreen = ({ navigation }) => {
   const { analysisResult } = useContext(AnalysisContext);
+  const cardRef = useRef(null);
+  const [sharing, setSharing] = useState(false);
 
   if (!analysisResult) {
     return (
@@ -24,6 +29,24 @@ const AnalysisResultScreen = ({ navigation }) => {
     { label: 'Hair', hex: analysis?.hair_color },
     { label: 'Eyes', hex: analysis?.eye_color },
   ].filter((c) => c.hex);
+
+  const handleShare = async () => {
+    if (!cardRef.current) return;
+    setSharing(true);
+    try {
+      const uri = await cardRef.current.capture();
+      const canShare = await Sharing.isAvailableAsync();
+      if (!canShare) {
+        Alert.alert('Sharing unavailable', 'Sharing is not supported on this device.');
+        return;
+      }
+      await Sharing.shareAsync(uri, { mimeType: 'image/png' });
+    } catch (e) {
+      Alert.alert('Share Failed', e.message || 'Could not create your color card.');
+    } finally {
+      setSharing(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -65,6 +88,23 @@ const AnalysisResultScreen = ({ navigation }) => {
         ))}
       </View>
 
+      {palette && palette.length > 0 && (
+        <View style={styles.shareSection}>
+          <Text style={styles.sectionTitle}>Share Your Color Card</Text>
+          <ViewShot ref={cardRef} options={{ format: 'png', quality: 0.9 }}>
+            <ColorCard season={season} palette={palette} />
+          </ViewShot>
+          <View style={styles.shareButtonSpacing}>
+            <AppButton
+              title={sharing ? 'Preparing...' : 'Share my color card'}
+              variant="secondary"
+              onPress={handleShare}
+              disabled={sharing}
+            />
+          </View>
+        </View>
+      )}
+
       <AppButton
         title="View Recommended Products"
         onPress={() => navigation.navigate('ProductCatalog')}
@@ -87,7 +127,9 @@ const styles = StyleSheet.create({
   paletteContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 30 },
   colorItem: { alignItems: 'center', margin: 8 },
   colorText: { marginTop: 4, fontSize: 12, color: '#333' },
-  hexText: { fontSize: 11, color: '#888' }
+  hexText: { fontSize: 11, color: '#888' },
+  shareSection: { marginBottom: 30 },
+  shareButtonSpacing: { marginTop: 16 }
 });
 
 export default AnalysisResultScreen;
