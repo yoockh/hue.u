@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, Image, Button, Text } from 'react-native';
+import { View, StyleSheet, Image, Text } from 'react-native';
 import { AnalysisContext } from '../context/AnalysisContext';
-import colors from '../constants/colors';
+import AppButton from '../components/AppButton';
 
 const TryOnResultScreen = ({ route, navigation }) => {
   const { resultImageUrl } = route.params || {};
@@ -24,9 +24,9 @@ const TryOnResultScreen = ({ route, navigation }) => {
       )}
 
       <View style={styles.controls}>
-        <Button title="Back to Catalog" onPress={() => navigation.navigate('ProductCatalog')} />
+        <AppButton title="Back to Catalog" variant="secondary" onPress={() => navigation.navigate('ProductCatalog')} />
         <View style={{ height: 10 }} />
-        <Button title="Start Over" onPress={handleStartOver} color={colors.error} />
+        <AppButton title="Start Over" variant="danger" onPress={handleStartOver} />
       </View>
     </View>
   );

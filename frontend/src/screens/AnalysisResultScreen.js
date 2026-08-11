@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { AnalysisContext } from '../context/AnalysisContext';
 import ColorSwatch from '../components/ColorSwatch';
-import colors from '../constants/colors';
+import AppButton from '../components/AppButton';
 
 const AnalysisResultScreen = ({ navigation }) => {
   const { analysisResult } = useContext(AnalysisContext);
@@ -11,7 +11,7 @@ const AnalysisResultScreen = ({ navigation }) => {
     return (
       <View style={[styles.container, styles.centered]}>
         <Text style={styles.emptyText}>No analysis data found.</Text>
-        <Button title="Start a New Analysis" onPress={() => navigation.navigate('SkinAnalysis')} />
+        <AppButton title="Start a New Analysis" onPress={() => navigation.navigate('SkinAnalysis')} />
       </View>
     );
   }
@@ -42,10 +42,9 @@ const AnalysisResultScreen = ({ navigation }) => {
         ))}
       </View>
 
-      <Button 
-        title="View Recommended Products" 
+      <AppButton
+        title="View Recommended Products"
         onPress={() => navigation.navigate('ProductCatalog')}
-        color={colors.primary}
       />
     </ScrollView>
   );

@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useTryOn } from '../hooks/useTryOn';
-import colors from '../constants/colors';
 import LoadingSpinner from '../components/LoadingSpinner';
+import AppButton from '../components/AppButton';
 
 const UploadFullBodyScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
@@ -53,9 +53,9 @@ const UploadFullBodyScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.controls}>
-        <Button title="Choose Photo" onPress={pickImage} disabled={loading} />
+        <AppButton title="Choose Photo" variant="secondary" onPress={pickImage} disabled={loading} />
         <View style={{ height: 10 }} />
-        <Button title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} color={colors.primary} />
+        <AppButton title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} />
       </View>
     </View>
   );
