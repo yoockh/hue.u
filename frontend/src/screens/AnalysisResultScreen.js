@@ -7,7 +7,12 @@ const AnalysisResultScreen = ({ navigation }) => {
   const { analysisResult } = useContext(AnalysisContext);
 
   if (!analysisResult) {
-    return <View style={styles.container}><Text>No analysis data found.</Text></View>;
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.emptyText}>No analysis data found.</Text>
+        <Button title="Start a New Analysis" onPress={() => navigation.navigate('SkinAnalysis')} />
+      </View>
+    );
   }
 
   const { classification, recommendations, analysis } = analysisResult.data;
@@ -44,6 +49,8 @@ const AnalysisResultScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  centered: { justifyContent: 'center', alignItems: 'center' },
+  emptyText: { fontSize: 16, color: '#666', marginBottom: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   card: { padding: 16, backgroundColor: '#f8f8f8', borderRadius: 8, marginBottom: 20 },
   label: { fontSize: 16, color: '#666', marginBottom: 8 },
