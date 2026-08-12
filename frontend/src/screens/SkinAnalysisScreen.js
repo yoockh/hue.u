@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
+import { useAlert } from '../context/AlertContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CameraGuideOverlay from '../components/CameraGuideOverlay';
 import AppButton from '../components/AppButton';
@@ -15,6 +16,7 @@ const SkinAnalysisScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { performAnalysis, loading } = useSkinAnalysis();
   const { setAnalysisResult } = useContext(AnalysisContext);
+  const { showAlert } = useAlert();
 
   // Downscale/compress before upload so both sources produce a consistent,
   // reasonably sized image for the backend.
@@ -30,10 +32,11 @@ const SkinAnalysisScreen = ({ navigation }) => {
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert(
-        'Photo access needed',
-        'Hue.U needs permission to open your photo library. You can enable it in Settings.'
-      );
+      showAlert({
+        type: 'info',
+        title: 'Photo access needed',
+        message: 'Hue.U needs permission to open your photo library. You can enable it in Settings.',
+      });
       return;
     }
 
@@ -52,10 +55,11 @@ const SkinAnalysisScreen = ({ navigation }) => {
   const takePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert(
-        'Camera access needed',
-        'Hue.U needs permission to use your camera. You can enable it in Settings.'
-      );
+      showAlert({
+        type: 'info',
+        title: 'Camera access needed',
+        message: 'Hue.U needs permission to use your camera. You can enable it in Settings.',
+      });
       return;
     }
 
@@ -72,13 +76,16 @@ const SkinAnalysisScreen = ({ navigation }) => {
   };
 
   const handleAnalyze = async () => {
-    if (!photoUri) return Alert.alert('Error', 'Please select a photo first');
+    if (!photoUri) {
+      showAlert({ type: 'info', title: 'Select a photo', message: 'Please choose or take a photo first.' });
+      return;
+    }
     try {
       const result = await performAnalysis(photoUri);
       setAnalysisResult(result);
       navigation.navigate('AnalysisResult');
     } catch (e) {
-      Alert.alert('Analysis Failed', e.message);
+      showAlert({ type: 'error', title: 'Analysis Failed', message: e.message });
     }
   };
 

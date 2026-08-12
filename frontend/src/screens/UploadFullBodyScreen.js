@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { AnalysisContext } from '../context/AnalysisContext';
+import { useAlert } from '../context/AlertContext';
 import { useTryOn } from '../hooks/useTryOn';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AppButton from '../components/AppButton';
@@ -13,6 +14,7 @@ const UploadFullBodyScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { selectedProduct } = useContext(AnalysisContext);
   const { performTryOn, loading } = useTryOn();
+  const { showAlert } = useAlert();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -27,14 +29,20 @@ const UploadFullBodyScreen = ({ navigation }) => {
   };
 
   const handleTryOn = async () => {
-    if (!photoUri) return Alert.alert('Error', 'Please select a full body photo');
-    if (!selectedProduct) return Alert.alert('Error', 'No product selected');
+    if (!photoUri) {
+      showAlert({ type: 'info', title: 'Select a photo', message: 'Please select a full body photo.' });
+      return;
+    }
+    if (!selectedProduct) {
+      showAlert({ type: 'info', title: 'No product selected', message: 'Please pick a product to try on first.' });
+      return;
+    }
 
     try {
       const result = await performTryOn(photoUri, selectedProduct.image_url, selectedProduct.garment_category);
       navigation.navigate('TryOnResult', { resultImageUrl: result.data.url, originalPhotoUri: photoUri });
     } catch (e) {
-      Alert.alert('Try-On Failed', e.message);
+      showAlert({ type: 'error', title: 'Try-On Failed', message: e.message });
     }
   };
 
