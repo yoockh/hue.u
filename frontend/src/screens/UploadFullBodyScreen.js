@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useTryOn } from '../hooks/useTryOn';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -49,7 +50,9 @@ const UploadFullBodyScreen = ({ navigation }) => {
           <Image source={{ uri: photoUri }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
-            <Text style={styles.placeholderIcon}>🧍</Text>
+            <View style={styles.illustrationBadge}>
+              <Ionicons name="body-outline" size={44} color={colors.primaryStrong} />
+            </View>
             <Text style={styles.placeholderText}>No photo selected</Text>
           </View>
         )}
@@ -80,7 +83,15 @@ const styles = StyleSheet.create({
   },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  placeholderIcon: { fontSize: 44, marginBottom: 8 },
+  illustrationBadge: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   placeholderText: { ...typography.body, color: colors.textSecondary },
   controls: { paddingBottom: 20 }
 });

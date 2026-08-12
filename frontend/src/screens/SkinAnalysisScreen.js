@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { Ionicons } from '@expo/vector-icons';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -102,7 +103,7 @@ const SkinAnalysisScreen = ({ navigation }) => {
         ) : (
           <View style={styles.placeholder}>
             <View style={styles.illustrationBadge}>
-              <Text style={styles.illustrationEmoji}>📸</Text>
+              <Ionicons name="camera-outline" size={44} color={colors.primaryStrong} />
             </View>
             <Text style={styles.placeholderTitle}>Add your photo</Text>
             <Text style={styles.placeholderText}>
@@ -157,7 +158,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  illustrationEmoji: { fontSize: 44 },
   placeholderTitle: { ...typography.sectionTitle, color: colors.text, marginBottom: 6 },
   placeholderText: { ...typography.body, color: colors.textSecondary, textAlign: 'center' },
   controls: { paddingBottom: 20 },
