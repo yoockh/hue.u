@@ -176,6 +176,10 @@ backend/
 
 Base path: `/api`
 
+> **Interactive docs:** run the server and open **http://localhost:5000/api-docs**
+> (Swagger UI) to try every endpoint from the browser. Copy-paste `curl` commands
+> live in [TESTING.md](TESTING.md).
+
 ### `POST /api/analyze-skin`
 Analyze a face photo and return the color profile.
 
