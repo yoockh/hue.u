@@ -4,6 +4,7 @@ import { AnalysisContext } from '../context/AnalysisContext';
 import { getProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import colors from '../constants/colors';
+import typography from '../constants/typography';
 
 const ProductCatalogScreen = ({ navigation }) => {
   const { analysisResult, setSelectedProduct } = useContext(AnalysisContext);
@@ -35,7 +36,7 @@ const ProductCatalogScreen = ({ navigation }) => {
   };
 
   if (loading) {
-    return <View style={styles.centered}><ActivityIndicator size="large" /></View>;
+    return <View style={styles.centered}><ActivityIndicator size="large" color={colors.primary} /></View>;
   }
 
   if (error) {
@@ -69,12 +70,12 @@ const ProductCatalogScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
+  container: { flex: 1, padding: 16, backgroundColor: colors.background },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: colors.background },
+  title: { ...typography.title, color: colors.text, marginBottom: 16 },
   row: { justifyContent: 'space-between' },
-  errorText: { color: colors.error, fontSize: 16, textAlign: 'center' },
-  emptyText: { color: colors.textSecondary, fontSize: 16, textAlign: 'center' }
+  errorText: { ...typography.body, color: colors.error, textAlign: 'center' },
+  emptyText: { ...typography.body, color: colors.textSecondary, textAlign: 'center' }
 });
 
 export default ProductCatalogScreen;

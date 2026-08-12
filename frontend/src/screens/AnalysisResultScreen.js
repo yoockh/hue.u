@@ -6,6 +6,8 @@ import { AnalysisContext } from '../context/AnalysisContext';
 import ColorSwatch from '../components/ColorSwatch';
 import ColorCard from '../components/ColorCard';
 import AppButton from '../components/AppButton';
+import colors from '../constants/colors';
+import typography from '../constants/typography';
 
 const AnalysisResultScreen = ({ navigation }) => {
   const { analysisResult } = useContext(AnalysisContext);
@@ -114,20 +116,27 @@ const AnalysisResultScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  container: { flex: 1, padding: 16, backgroundColor: colors.background },
   centered: { justifyContent: 'center', alignItems: 'center' },
-  emptyText: { fontSize: 16, color: '#666', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  card: { padding: 16, backgroundColor: '#f8f8f8', borderRadius: 8, marginBottom: 20 },
-  label: { fontSize: 16, color: '#666', marginBottom: 8 },
-  value: { color: '#000', fontWeight: 'bold' },
-  explanation: { fontSize: 14, color: '#444', marginTop: 8, lineHeight: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 4 },
-  sectionSubtitle: { fontSize: 13, color: '#666', marginBottom: 12 },
+  emptyText: { ...typography.body, color: colors.textSecondary, marginBottom: 16 },
+  title: { ...typography.hero, color: colors.text, marginBottom: 20 },
+  card: {
+    padding: 18,
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 24,
+  },
+  label: { ...typography.body, color: colors.textSecondary, marginBottom: 8, textTransform: 'capitalize' },
+  value: { color: colors.primaryStrong, fontWeight: '800' },
+  explanation: { ...typography.body, fontSize: 14, color: colors.text, marginTop: 8 },
+  sectionTitle: { ...typography.sectionTitle, color: colors.text, marginBottom: 4 },
+  sectionSubtitle: { ...typography.caption, fontSize: 13, color: colors.textSecondary, marginBottom: 12 },
   paletteContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 30 },
   colorItem: { alignItems: 'center', margin: 8 },
-  colorText: { marginTop: 4, fontSize: 12, color: '#333' },
-  hexText: { fontSize: 11, color: '#888' },
+  colorText: { marginTop: 4, ...typography.caption, color: colors.text },
+  hexText: { ...typography.caption, fontSize: 11, color: colors.textSecondary },
   shareSection: { marginBottom: 30 },
   shareButtonSpacing: { marginTop: 16 }
 });
