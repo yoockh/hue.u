@@ -5,6 +5,8 @@ import { AnalysisContext } from '../context/AnalysisContext';
 import { useTryOn } from '../hooks/useTryOn';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AppButton from '../components/AppButton';
+import colors from '../constants/colors';
+import typography from '../constants/typography';
 
 const UploadFullBodyScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
@@ -47,7 +49,8 @@ const UploadFullBodyScreen = ({ navigation }) => {
           <Image source={{ uri: photoUri }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
-            <Text>No photo selected</Text>
+            <Text style={styles.placeholderIcon}>🧍</Text>
+            <Text style={styles.placeholderText}>No photo selected</Text>
           </View>
         )}
       </View>
@@ -62,12 +65,23 @@ const UploadFullBodyScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 20, fontWeight: 'bold' },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 20 },
-  imageContainer: { flex: 1, marginBottom: 20, borderRadius: 12, overflow: 'hidden', backgroundColor: '#eee' },
+  container: { flex: 1, padding: 16, backgroundColor: colors.background },
+  title: { ...typography.title, color: colors.text },
+  subtitle: { ...typography.label, color: colors.textSecondary, marginBottom: 20 },
+  imageContainer: {
+    flex: 1,
+    marginBottom: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceMuted,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderStyle: 'dashed',
+  },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  placeholderIcon: { fontSize: 44, marginBottom: 8 },
+  placeholderText: { ...typography.body, color: colors.textSecondary },
   controls: { paddingBottom: 20 }
 });
 

@@ -1,14 +1,37 @@
-// No official brand color spec exists yet, so primary/secondary are drawn from
-// the app's own Winter seasonal palette (backend/src/services/colorLogic/paletteData.js)
-// as a placeholder identity, distinct from the default iOS system blue. Confirm
-// with design before treating these as final.
+// Hue.U brand palette — "lollipop" pink + baby-blue, tuned to read as premium
+// beauty-tech rather than childish. Two pink shades are kept on purpose:
+//   - `primary`  (#FF6B9D) is the light brand pink used for identity, accents,
+//     the wordmark, and active states.
+//   - `primaryStrong` (#E84A7F) is a deeper pink used as the *filled* CTA
+//     background so white label text clears WCAG large-text contrast (~3.7:1),
+//     which the lighter pink (~2.7:1) does not.
+// Likewise the teal/baby-blue has a light accent (`secondary`) plus a darker
+// `secondaryStrong` for text/outline labels that must stay legible on white.
 export default {
-  primary: '#E0115F', // "Ruby Red" (Winter palette) — brand CTA color
-  onPrimary: '#FFFFFF', // text/icon color on top of a primary-filled surface
-  secondary: '#4169E1', // "Royal Blue" (Winter palette) — brand secondary/outline color
-  background: '#F2F2F7',
-  surface: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#8E8E93',
-  error: '#FF3B30',
+  // Pink
+  primary: '#FF6B9D',        // brand pink — wordmark, accents, highlights
+  primaryStrong: '#E84A7F',  // accessible filled-button background
+  primarySoft: '#FFE1EC',    // pink tint for chips / selected states
+  onPrimary: '#FFFFFF',      // text/icon on a pink-filled surface
+
+  // Baby blue / teal
+  secondary: '#5CC9D1',      // brand baby-blue — borders, accents
+  secondaryStrong: '#1F8E9C',// accessible teal for outline/text labels
+  secondarySoft: '#DEF5F6',  // teal tint for surfaces
+  onSecondary: '#FFFFFF',
+
+  // Neutrals (warm, tinted toward the brand so nothing reads as default gray)
+  background: '#FFF6FA',     // soft pink-tinted app background
+  surface: '#FFFFFF',        // cards / sheets
+  surfaceMuted: '#FDEFF5',   // placeholder / empty-state fill
+  text: '#2B1F2A',           // deep plum near-black (high contrast on light bg)
+  textSecondary: '#8A7C86',  // muted mauve-gray for captions/labels
+  border: '#F3D9E6',         // soft pink hairline border
+
+  // Feedback
+  error: '#E5484D',
+  onError: '#FFFFFF',
+
+  // Overlays (kept literal — used over photos, not the themed UI)
+  scrim: 'rgba(43, 31, 42, 0.55)',
 };

@@ -15,32 +15,36 @@ const ProductCard = ({ product, onPress }) => (
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: 16,
     marginBottom: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    shadowColor: colors.primaryStrong,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
     width: '48%',
   },
   image: {
     width: '100%',
     height: 150,
+    backgroundColor: colors.surfaceMuted,
   },
   info: {
-    padding: 8,
+    padding: 10,
   },
   name: {
     fontSize: 14,
+    fontWeight: '600',
     color: colors.text,
     marginBottom: 4,
   },
   price: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '800',
+    color: colors.primaryStrong,
   },
 });
 
