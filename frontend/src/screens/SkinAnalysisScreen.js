@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CameraGuideOverlay from '../components/CameraGuideOverlay';
+import AppButton from '../components/AppButton';
 
 const SkinAnalysisScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
@@ -63,9 +64,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.controls}>
-        <Button title="Choose Photo" onPress={pickImage} />
+        <AppButton title="Choose Photo" variant="secondary" onPress={pickImage} disabled={loading} />
         <View style={{ height: 10 }} />
-        <Button title="Analyze" onPress={handleAnalyze} disabled={!photoUri} />
+        <AppButton title="Analyze" onPress={handleAnalyze} disabled={!photoUri || loading} />
       </View>
     </View>
   );

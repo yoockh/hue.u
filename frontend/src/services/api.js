@@ -1,6 +1,16 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:5000/api';
+// Resolution order, highest priority first:
+// 1. EXPO_PUBLIC_API_URL — existing env-var override, unchanged so current dev
+//    setups keep working exactly as before.
+// 2. app.json "expo.extra.apiUrl" (or app.config.js) — lets a built app point at
+//    a different backend (e.g. a DigitalOcean-hosted deployment) by editing
+//    config only, no source change or rebuild-from-env-var needed. Useful for
+//    demoing a production/staging backend on a physical device.
+// 3. Android-emulator loopback default.
+const configuredApiUrl = Constants.expoConfig?.extra?.apiUrl;
+const API_URL = process.env.EXPO_PUBLIC_API_URL || configuredApiUrl || 'http://10.0.2.2:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -12,6 +22,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
       error.message = 'The request timed out. Please try again later.';
+    } else if (error.response?.data?.message) {
+      // Surface the backend's readable message (e.g. "Face not detected...")
+      // instead of axios's generic "Request failed with status code 400".
+      error.message = error.response.data.message;
+    } else if (!error.response) {
+      error.message = 'Network error. Please check your connection and try again.';
     }
     return Promise.reject(error);
   }

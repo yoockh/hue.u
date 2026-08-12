@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useTryOn } from '../hooks/useTryOn';
 import LoadingSpinner from '../components/LoadingSpinner';
+import AppButton from '../components/AppButton';
 
 const UploadFullBodyScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
@@ -27,9 +28,8 @@ const UploadFullBodyScreen = ({ navigation }) => {
     if (!selectedProduct) return Alert.alert('Error', 'No product selected');
 
     try {
-      const result = await performTryOn(photoUri, selectedProduct.image_url, selectedProduct.category);
-      // Assuming result contains result_image_url
-      navigation.navigate('TryOnResult', { resultImageUrl: result.result_image_url });
+      const result = await performTryOn(photoUri, selectedProduct.image_url, selectedProduct.garment_category);
+      navigation.navigate('TryOnResult', { resultImageUrl: result.data.url, originalPhotoUri: photoUri });
     } catch (e) {
       Alert.alert('Try-On Failed', e.message);
     }
@@ -53,9 +53,9 @@ const UploadFullBodyScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.controls}>
-        <Button title="Choose Photo" onPress={pickImage} />
+        <AppButton title="Choose Photo" variant="secondary" onPress={pickImage} disabled={loading} />
         <View style={{ height: 10 }} />
-        <Button title="See Try-On" onPress={handleTryOn} disabled={!photoUri} color="#007AFF" />
+        <AppButton title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} />
       </View>
     </View>
   );
