@@ -23,7 +23,7 @@ The backend orchestrates three things: PerfectCorp's AI vision endpoints, a loca
 4. The season is used to filter a curated **product catalog**.
 5. The user picks a garment and runs a **virtual try-on** (PerfectCorp `cloth-v3`), which composites the garment onto their body photo.
 
-**Why async polling?** PerfectCorp's vision endpoints are asynchronous: you create a *task*, then poll its status until it succeeds or fails. There is no synchronous "analyze and return" call, so the backend wraps each task in a bounded polling loop (see [`utils/polling.js`](src/utils/polling.js)). File uploads use short-lived presigned S3 URLs, and auth uses a short-lived RSA-signed access token that is cached and refreshed in-memory.
+**Why async polling?** PerfectCorp's vision endpoints are asynchronous: you create a *task*, then poll its status until it succeeds or fails. There is no synchronous "analyze and return" call, so the backend wraps each task in a bounded polling loop (see [`utils/polling.js`](src/utils/polling.js)). File uploads use short-lived presigned S3 URLs, and auth uses the PerfectCorp **V2 scheme**: the API key is sent directly as a Bearer token on every request (no token exchange or RSA signing).
 
 ---
 
@@ -63,13 +63,7 @@ sequenceDiagram
 
     Ctrl->>Svc: analyzeSkinTone(buffer) / tryOnClothes({...})
     Svc->>Auth: getAccessToken()
-    alt token cached & valid
-        Auth-->>Svc: cached token
-    else expired / missing
-        Auth->>PC: POST /s2s/v1.0/client/auth (RSA id_token)
-        PC-->>Auth: access_token (+ ttl)
-        Auth-->>Svc: fresh token
-    end
+    Auth-->>Svc: API key (V2 Bearer token, no exchange)
 
     opt no reusable file id supplied
         Svc->>PC: POST /s2s/v2.0/file (request upload slot)
@@ -144,7 +138,7 @@ flowchart LR
 
 | Tool | Version | Role in this project |
 |------|---------|----------------------|
-| **Node.js** | runtime | Runs the server; uses the built-in `node:test` runner and `crypto` for RSA auth signing. |
+| **Node.js** | runtime | Runs the server; uses the built-in `node:test` runner for the color-logic tests. |
 | **Express** | 5.x | HTTP server, routing, JSON body parsing, error middleware. |
 | **Axios** | 1.x | HTTP client for all PerfectCorp calls (auth, file upload, task create, polling) and S3 presigned uploads. |
 | **Multer** | 2.x | Multipart/form-data handling for image uploads; uses in-memory storage and an image-only filter (10 MB cap). |
@@ -231,12 +225,11 @@ Defined and validated in [`src/config/env.js`](src/config/env.js). Copy `.env.ex
 
 | Variable | Required | Description |
 |----------|:--------:|-------------|
-| `PERFECTCORP_CLIENT_ID` | ✅ | PerfectCorp S2S client id used in the auth handshake. Server refuses to start if missing. |
-| `PERFECTCORP_CLIENT_SECRET` | ✅ | RSA **public key** issued with the client id; used to sign the `id_token`. Server refuses to start if missing. |
+| `PERFECTCORP_API_KEY` | ✅ | PerfectCorp/YouCam **V2 API key**, sent as `Authorization: Bearer <key>` on every request. Generate one at the [YouCam API console](https://yce.makeupar.com/api-console/en/api-keys/). Server refuses to start if missing. |
 | `PERFECTCORP_BASE_URL` | ⬜ | API base URL. Defaults to `https://yce-api-01.makeupar.com`. |
 | `PORT` | ⬜ | HTTP port. Defaults to `5000`. |
 
-`server.js` calls `validateEnv()` before binding the port, so a missing credential fails fast with a clear message instead of a confusing `401` on the first request.
+`server.js` calls `validateEnv()` before binding the port, so a missing key fails fast with a clear message instead of a confusing `401` on the first request.
 
 ---
 
@@ -326,7 +319,7 @@ npm install
 
 # 2. Configure environment
 cp .env.example .env
-#    then edit .env and add your PerfectCorp CLIENT_ID / CLIENT_SECRET
+#    then edit .env and add your PerfectCorp PERFECTCORP_API_KEY
 
 # 3. Run
 npm run dev     # node --watch server.js (auto-restart on change)
