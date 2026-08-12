@@ -67,6 +67,7 @@ async function getHistory(max = 50) {
       skin_color: data.skin_color || null,
       hair_color: data.hair_color || null,
       eye_color: data.eye_color || null,
+      photo_url: data.photo_url || null,
       createdAt: data.createdAt && data.createdAt.toDate
         ? data.createdAt.toDate().toISOString()
         : null
