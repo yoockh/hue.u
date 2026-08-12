@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DashboardIllustration from '../components/DashboardIllustration';
+import ScanningAvatar from '../components/ScanningAvatar';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
+
+const avatarImage = require('../../assets/images/avatar.png');
+const ILLUSTRATION_HEIGHT = 280;
 
 // Home tab. Opens the app: hero illustration (with a help shortcut to the
 // education screen) and the primary CTA into the existing analysis flow.
@@ -12,7 +15,7 @@ const DashboardScreen = ({ navigation }) => (
   <View style={styles.container}>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.illustrationCard}>
-        <DashboardIllustration />
+        <ScanningAvatar source={avatarImage} height={ILLUSTRATION_HEIGHT} />
         <TouchableOpacity
           style={styles.helpButton}
           onPress={() => navigation.navigate('AboutSkinTone')}
@@ -41,7 +44,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 20, flexGrow: 1, justifyContent: 'center' },
   illustrationCard: {
-    height: 280,
+    height: ILLUSTRATION_HEIGHT,
     borderRadius: 24,
     overflow: 'hidden',
     backgroundColor: colors.surfaceMuted,
