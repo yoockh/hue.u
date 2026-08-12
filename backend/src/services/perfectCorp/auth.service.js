@@ -1,61 +1,15 @@
-const axios = require('axios');
-const crypto = require('crypto');
 const env = require('../../config/env');
 
-// Perfect Corp does not accept a static API key. Every request must carry a
-// short-lived id_token obtained by exchanging the client credentials. The token
-// expires, so it is cached in memory and refreshed shortly before expiry.
-let cachedToken = null;
-let tokenExpiresAt = 0;
-
-// Refresh a little before the real expiry so a token never lapses mid-request.
-const EXPIRY_BUFFER_MS = 60 * 1000;
-
-// Perfect Corp access tokens live for two hours; used as a fallback when the
-// auth response omits an explicit lifetime.
-const DEFAULT_TTL_SECONDS = 2 * 60 * 60;
-
-// The auth handshake signs "client_id=<id>&timestamp=<ms>" with the RSA key
-// (client_secret) issued alongside the client id, then exchanges it for an
-// access token.
-function buildIdToken() {
-  const payload = `client_id=${env.PERFECTCORP_CLIENT_ID}&timestamp=${Date.now()}`;
-  const encrypted = crypto.publicEncrypt(
-    {
-      key: env.PERFECTCORP_CLIENT_SECRET,
-      padding: crypto.constants.RSA_PKCS1_PADDING
-    },
-    Buffer.from(payload, 'utf8')
-  );
-  return encrypted.toString('base64');
-}
-
-async function requestAccessToken() {
-  const response = await axios.post(
-    `${env.PERFECTCORP_BASE_URL}/s2s/v1.0/client/auth`,
-    {
-      client_id: env.PERFECTCORP_CLIENT_ID,
-      id_token: buildIdToken()
-    },
-    { headers: { 'Content-Type': 'application/json' } }
-  );
-
-  const result = response.data?.result;
-  if (!result?.access_token) {
-    throw new Error('Failed to obtain Perfect Corp access token.');
-  }
-
-  const ttlSeconds = Number(result.expires_in) || DEFAULT_TTL_SECONDS;
-  cachedToken = result.access_token;
-  tokenExpiresAt = Date.now() + ttlSeconds * 1000;
-  return cachedToken;
-}
-
-async function getAccessToken() {
-  if (cachedToken && Date.now() < tokenExpiresAt - EXPIRY_BUFFER_MS) {
-    return cachedToken;
-  }
-  return requestAccessToken();
+// PerfectCorp / YouCam V2 authentication is a static API key sent directly as a
+// Bearer token on every request (Authorization: Bearer <API_KEY>). See the
+// official quick start guide: https://docs.perfectcorp.com/develop/quick_start_guide
+//
+// This replaces the deprecated V1 scheme, which RSA-signed a client_id/timestamp
+// payload into an id_token and exchanged it at /s2s/v1.0/client/auth for a
+// short-lived access token. V2 has no token exchange, no expiry, and no signing,
+// so there is nothing to cache or refresh — the configured key is the credential.
+function getAccessToken() {
+  return env.PERFECTCORP_API_KEY;
 }
 
 module.exports = { getAccessToken };
