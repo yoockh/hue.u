@@ -1,11 +1,18 @@
 import React from 'react';
-import Svg, { Rect, Text as SvgText, TSpan } from 'react-native-svg';
+import Svg, { Rect, Text as SvgText } from 'react-native-svg';
 import colors from '../constants/colors';
 
 // SVG "Hue.U" wordmark — no image asset exists yet, so brand identity is drawn
 // as vector text: pink "Hue" + teal ".U", bold and playful per the lollipop
 // theme. Rendering it as SVG (instead of RN <Text>) means it scales crisply and
 // can double as a temporary app icon.
+//
+// The two tones are drawn as two separate <Text> elements that meet exactly at
+// the horizontal centre — "Hue" anchored at its end, ".U" anchored at its start,
+// both at x = centre. This joins them seamlessly into "Hue.U" without measuring
+// glyph widths (a single multi-<TSpan> text mis-anchored the second span, which
+// left an odd gap and clipped the "U"). The canvas is kept generously wide so no
+// glyph is ever cut off.
 //
 // variant:
 //   "plain" (default) — transparent, for the navigation header.
@@ -14,10 +21,9 @@ const Wordmark = ({ height = 26, variant = 'plain' }) => {
   const isBadge = variant === 'badge';
   const pad = isBadge ? height * 0.55 : 0;
   const fontSize = height;
-  // "Hue.U" is ~5 glyphs; this width comfortably fits it at textAnchor="middle".
-  const textWidth = fontSize * 3.1;
-  const width = textWidth + pad * 2;
+  const width = fontSize * 4.2 + pad * 2; // wide enough that nothing clips
   const totalHeight = height + pad * 2;
+  const centerX = width / 2;
   const baselineY = totalHeight / 2 + fontSize * 0.35;
 
   return (
@@ -39,14 +45,24 @@ const Wordmark = ({ height = 26, variant = 'plain' }) => {
         />
       )}
       <SvgText
-        x={width / 2}
+        x={centerX}
         y={baselineY}
         fontSize={fontSize}
         fontWeight="bold"
-        textAnchor="middle"
+        textAnchor="end"
+        fill={colors.primaryStrong}
       >
-        <TSpan fill={colors.primaryStrong}>Hue</TSpan>
-        <TSpan fill={colors.secondaryStrong}>.U</TSpan>
+        Hue
+      </SvgText>
+      <SvgText
+        x={centerX}
+        y={baselineY}
+        fontSize={fontSize}
+        fontWeight="bold"
+        textAnchor="start"
+        fill={colors.secondaryStrong}
+      >
+        .U
       </SvgText>
     </Svg>
   );
