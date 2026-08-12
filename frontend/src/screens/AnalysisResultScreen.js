@@ -1,8 +1,9 @@
 import React, { useContext, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import { AnalysisContext } from '../context/AnalysisContext';
+import { useAlert } from '../context/AlertContext';
 import ColorSwatch from '../components/ColorSwatch';
 import ColorCard from '../components/ColorCard';
 import AppButton from '../components/AppButton';
@@ -11,6 +12,7 @@ import typography from '../constants/typography';
 
 const AnalysisResultScreen = ({ navigation }) => {
   const { analysisResult } = useContext(AnalysisContext);
+  const { showAlert } = useAlert();
   const cardRef = useRef(null);
   const [sharing, setSharing] = useState(false);
 
@@ -39,12 +41,12 @@ const AnalysisResultScreen = ({ navigation }) => {
       const uri = await cardRef.current.capture();
       const canShare = await Sharing.isAvailableAsync();
       if (!canShare) {
-        Alert.alert('Sharing unavailable', 'Sharing is not supported on this device.');
+        showAlert({ type: 'info', title: 'Sharing unavailable', message: 'Sharing is not supported on this device.' });
         return;
       }
       await Sharing.shareAsync(uri, { mimeType: 'image/png' });
     } catch (e) {
-      Alert.alert('Share Failed', e.message || 'Could not create your color card.');
+      showAlert({ type: 'error', title: 'Share Failed', message: e.message || 'Could not create your color card.' });
     } finally {
       setSharing(false);
     }

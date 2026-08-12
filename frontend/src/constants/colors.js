@@ -30,6 +30,7 @@ export default {
 
   // Feedback
   error: '#E5484D',
+  errorSoft: '#FCE8E8',      // light red tint for error icon/badge backgrounds
   onError: '#FFFFFF',
 
   // Overlays (kept literal — used over photos, not the themed UI)
