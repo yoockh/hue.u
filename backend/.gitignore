@@ -2,3 +2,8 @@ node_modules/
 .env
 .DS_Store
 *.log
+
+# Local sample images used for manual API testing (see TESTING.md)
+sample-face.jpg
+sample-body.jpg
+sample-garment.jpg
