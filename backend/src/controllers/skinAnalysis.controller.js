@@ -5,6 +5,7 @@ const { mapToSeason } = require('../services/colorLogic/seasonMapper');
 const { buildExplanation } = require('../services/colorLogic/explanationBuilder');
 const paletteData = require('../services/colorLogic/paletteData');
 const { saveScan } = require('../services/firestore.service');
+const { uploadScanPhoto } = require('../services/cloudinary.service');
 const { AppError } = require('../utils/errorHandler');
 
 const analyzeSkin = async (req, res, next) => {
@@ -12,6 +13,14 @@ const analyzeSkin = async (req, res, next) => {
     if (!req.file) {
       throw new AppError('A face photo is required.', 400, 'missing_file');
     }
+
+    // Kick off the Cloudinary upload in parallel with the PerfectCorp analysis so
+    // the two independent network calls overlap. It must never fail the request,
+    // so swallow any error into a null URL (the scan is just saved without a photo).
+    const photoUrlPromise = uploadScanPhoto(req.file.buffer).catch((err) => {
+      console.error('Cloudinary upload failed; scan photo will not be stored:', err.message);
+      return null;
+    });
 
     // 1. Analyze skin using Perfect Corp API
     const colors = await analyzeSkinTone(
@@ -44,10 +53,13 @@ const analyzeSkin = async (req, res, next) => {
       }
     };
 
-    // 3. Persist to scan history (best-effort). Fire-and-forget so a Firestore
-    //    outage never blocks or fails the analysis the user came for — just log.
-    saveScan(responseData).catch((err) => {
-      console.error('Failed to save scan history to Firestore:', err.message);
+    // 3. Persist to scan history once the photo URL is ready (best-effort, after
+    //    the response). Fire-and-forget so neither the Cloudinary upload nor a
+    //    Firestore outage ever blocks or fails the analysis the user came for.
+    photoUrlPromise.then((photoUrl) => {
+      saveScan(responseData, photoUrl).catch((err) => {
+        console.error('Failed to save scan history to Firestore:', err.message);
+      });
     });
 
     // 4. Return the analysis

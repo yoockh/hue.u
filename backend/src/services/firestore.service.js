@@ -27,7 +27,8 @@ function getDb() {
 
 // Persist one analysis result. `result` is the same object the controller
 // returns to the client: { analysis, classification, recommendations }.
-async function saveScan(result) {
+// `photoUrl` is the Cloudinary-hosted original photo (null if the upload failed).
+async function saveScan(result, photoUrl = null) {
   const doc = {
     season: result.classification.season,
     undertone: result.classification.undertone,
@@ -37,6 +38,7 @@ async function saveScan(result) {
     skin_color: result.analysis.skin_color || null,
     hair_color: result.analysis.hair_color || null,
     eye_color: result.analysis.eye_color || null,
+    photo_url: photoUrl || null,
     createdAt: FieldValue.serverTimestamp()
   };
 
