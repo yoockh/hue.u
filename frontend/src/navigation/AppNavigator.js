@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import TabNavigator from './TabNavigator';
 import SkinAnalysisScreen from '../screens/SkinAnalysisScreen';
 import AnalysisResultScreen from '../screens/AnalysisResultScreen';
 import ProductCatalogScreen from '../screens/ProductCatalogScreen';
@@ -12,13 +13,13 @@ import colors from '../constants/colors';
 
 const Stack = createStackNavigator();
 
-// Every screen shows the same centered "Hue.U" wordmark as its header title, so
-// branding stays consistent across the flow. Per-screen `title` strings are kept
-// only for the back-button label of the previous screen.
+// Root stack. The app opens on the bottom-tab navigator ("Tabs"); the analysis
+// flow screens are pushed on top of the tabs and keep the shared Hue.U wordmark
+// header. (The About screen is added as a modal in a later task.)
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SkinAnalysis" screenOptions={{
+      <Stack.Navigator initialRouteName="Tabs" screenOptions={{
         headerTitle: () => <Wordmark />,
         headerTitleAlign: 'center',
         headerStyle: { backgroundColor: colors.surface },
@@ -26,6 +27,7 @@ const AppNavigator = () => {
         headerShadowVisible: true,
         headerBackTitleStyle: { color: colors.primaryStrong },
       }}>
+        <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="SkinAnalysis" component={SkinAnalysisScreen} options={{ title: 'Home' }} />
         <Stack.Screen name="AnalysisResult" component={AnalysisResultScreen} options={{ title: 'Your Result' }} />
         <Stack.Screen name="ProductCatalog" component={ProductCatalogScreen} options={{ title: 'Shop' }} />
