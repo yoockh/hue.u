@@ -218,6 +218,12 @@ Composite a garment onto a body photo via PerfectCorp VTO.
   - `garment_category` — `full_body | upper_body | lower_body` (defaults to `full_body`).
 - **Response:** `{ "status": "success", "data": { "url": "<result image>", "dst_id": "...", "src_file_id": "..." } }`
 
+### `GET /api/history`
+Return saved scan history from Firestore, newest first.
+
+- **Response:** `{ "status": "success", "data": [ { "id", "season", "undertone", "contrast", "palette", "skin_color", "hair_color", "eye_color", "explanation", "createdAt" } ] }` (`createdAt` is an ISO string).
+- Every successful `POST /api/analyze-skin` is also saved here (best-effort — a Firestore failure is logged but never fails the analysis).
+
 ### `GET /health`
 Liveness check → `{ "status": "ok" }`.
 
@@ -230,10 +236,13 @@ Defined and validated in [`src/config/env.js`](src/config/env.js). Copy `.env.ex
 | Variable | Required | Description |
 |----------|:--------:|-------------|
 | `PERFECTCORP_API_KEY` | ✅ | PerfectCorp/YouCam **V2 API key**, sent as `Authorization: Bearer <key>` on every request. Generate one at the [YouCam API console](https://yce.makeupar.com/api-console/en/api-keys/). Server refuses to start if missing. |
+| `FIREBASE_PROJECT_ID` | ✅ | Firebase project id (from the service-account JSON). Used by Firestore for scan history. |
+| `FIREBASE_CLIENT_EMAIL` | ✅ | Service-account client email (`...@<project>.iam.gserviceaccount.com`). |
+| `FIREBASE_PRIVATE_KEY` | ✅ | Service-account private key. Store on one line with literal `\n` for newlines, in quotes — `env.js` converts them back to real newlines. |
 | `PERFECTCORP_BASE_URL` | ⬜ | API base URL. Defaults to `https://yce-api-01.makeupar.com`. |
 | `PORT` | ⬜ | HTTP port. Defaults to `5000`. |
 
-`server.js` calls `validateEnv()` before binding the port, so a missing key fails fast with a clear message instead of a confusing `401` on the first request.
+`server.js` calls `validateEnv()` before binding the port, so a missing key fails fast with a clear message instead of a confusing `401` on the first request. **Note:** the Firebase credentials are now required — the server will not boot without them (they power `/api/history` and history persistence).
 
 ---
 

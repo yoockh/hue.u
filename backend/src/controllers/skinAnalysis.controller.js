@@ -4,6 +4,7 @@ const { calculateContrast } = require('../services/colorLogic/contrastCalculator
 const { mapToSeason } = require('../services/colorLogic/seasonMapper');
 const { buildExplanation } = require('../services/colorLogic/explanationBuilder');
 const paletteData = require('../services/colorLogic/paletteData');
+const { saveScan } = require('../services/firestore.service');
 const { AppError } = require('../utils/errorHandler');
 
 const analyzeSkin = async (req, res, next) => {
@@ -30,21 +31,29 @@ const analyzeSkin = async (req, res, next) => {
     const recommendations = paletteData[season] || [];
     const explanation = buildExplanation(season, undertone, contrast);
 
-    // 3. Construct and return final response
+    const responseData = {
+      analysis: colors,
+      classification: {
+        undertone,
+        contrast,
+        season
+      },
+      recommendations: {
+        palette: recommendations,
+        explanation
+      }
+    };
+
+    // 3. Persist to scan history (best-effort). Fire-and-forget so a Firestore
+    //    outage never blocks or fails the analysis the user came for — just log.
+    saveScan(responseData).catch((err) => {
+      console.error('Failed to save scan history to Firestore:', err.message);
+    });
+
+    // 4. Return the analysis
     return res.status(200).json({
       status: 'success',
-      data: {
-        analysis: colors,
-        classification: {
-          undertone,
-          contrast,
-          season
-        },
-        recommendations: {
-          palette: recommendations,
-          explanation
-        }
-      }
+      data: responseData
     });
   } catch (error) {
     next(error);

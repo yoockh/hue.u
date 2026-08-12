@@ -6,14 +6,27 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const env = {
   PORT: process.env.PORT || 5000,
   PERFECTCORP_API_KEY: process.env.PERFECTCORP_API_KEY,
-  PERFECTCORP_BASE_URL: process.env.PERFECTCORP_BASE_URL || 'https://yce-api-01.makeupar.com'
+  PERFECTCORP_BASE_URL: process.env.PERFECTCORP_BASE_URL || 'https://yce-api-01.makeupar.com',
+
+  // Firebase Admin (Firestore) service-account credentials for scan history.
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+  // The private key is stored in .env with literal "\n" sequences (a PEM key
+  // spans multiple lines); convert them back to real newlines for the SDK.
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY
+    ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    : undefined
 };
 
-// Environment variables the server cannot run without. The PerfectCorp/YouCam V2
-// API key is sent as a Bearer token on every request; without it every API call
-// fails with 401. (V2 replaced the V1 client_id + RSA client_secret pair with a
-// single API key.)
-const REQUIRED_ENV = ['PERFECTCORP_API_KEY'];
+// Environment variables the server cannot run without: the PerfectCorp/YouCam V2
+// API key (Bearer token on every request) and the Firebase service-account
+// credentials used to persist and read scan history.
+const REQUIRED_ENV = [
+  'PERFECTCORP_API_KEY',
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_CLIENT_EMAIL',
+  'FIREBASE_PRIVATE_KEY'
+];
 
 // Fail fast at boot instead of surfacing confusing 401s on the first request.
 function validateEnv() {

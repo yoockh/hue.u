@@ -54,6 +54,11 @@ export const getProducts = async (season) => {
   return response.data;
 };
 
+export const getHistory = async () => {
+  const response = await api.get('/history');
+  return response.data;
+};
+
 export const tryOnGarment = async (userPhotoUri, garmentRefUrl, garmentCategory) => {
   const formData = new FormData();
   formData.append('src_image', {
