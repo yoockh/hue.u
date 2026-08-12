@@ -13,14 +13,28 @@ const SkinAnalysisScreen = ({ navigation }) => {
   const { performAnalysis, loading } = useSkinAnalysis();
   const { setAnalysisResult } = useContext(AnalysisContext);
 
+  // Downscale/compress before upload so both sources produce a consistent,
+  // reasonably sized image for the backend.
+  const processAndSet = async (uri) => {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    setPhotoUri(manipResult.uri);
+  };
+
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert('Permission required', 'We need permission to access your camera roll.');
+      Alert.alert(
+        'Photo access needed',
+        'Hue.U needs permission to open your photo library. You can enable it in Settings.'
+      );
       return;
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [3, 4],
@@ -28,12 +42,29 @@ const SkinAnalysisScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      const manipResult = await ImageManipulator.manipulateAsync(
-        result.assets[0].uri,
-        [{ resize: { width: 800 } }],
-        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+      await processAndSet(result.assets[0].uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert(
+        'Camera access needed',
+        'Hue.U needs permission to use your camera. You can enable it in Settings.'
       );
-      setPhotoUri(manipResult.uri);
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [3, 4],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      await processAndSet(result.assets[0].uri);
     }
   };
 
@@ -64,9 +95,12 @@ const SkinAnalysisScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.controls}>
-        <AppButton title="Choose Photo" variant="secondary" onPress={pickImage} disabled={loading} />
-        <View style={{ height: 10 }} />
-        <AppButton title="Analyze" onPress={handleAnalyze} disabled={!photoUri || loading} />
+        <View style={styles.sourceRow}>
+          <AppButton title="Take Photo" variant="secondary" onPress={takePhoto} disabled={loading} style={styles.sourceButton} />
+          <AppButton title="Choose from Gallery" variant="secondary" onPress={pickImage} disabled={loading} style={styles.sourceButton} />
+        </View>
+        <View style={{ height: 12 }} />
+        <AppButton title="Analyze My Colors" onPress={handleAnalyze} disabled={!photoUri || loading} />
       </View>
     </View>
   );
@@ -79,6 +113,8 @@ const styles = StyleSheet.create({
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   placeholderText: { color: '#666' },
   controls: { paddingBottom: 20 },
+  sourceRow: { flexDirection: 'row', gap: 12 },
+  sourceButton: { flex: 1 },
 });
 
 export default SkinAnalysisScreen;

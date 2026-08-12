@@ -21,6 +21,15 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Hue.U uses your photo library so you can pick a selfie to analyze.",
+          "cameraPermission": "Hue.U uses your camera so you can take a selfie to analyze."
+        }
+      ]
+    ],
     "extra": {
       "apiUrl": null
     }
