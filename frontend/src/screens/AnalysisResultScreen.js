@@ -11,7 +11,7 @@ import colors from '../constants/colors';
 import typography from '../constants/typography';
 
 const AnalysisResultScreen = ({ navigation }) => {
-  const { analysisResult } = useContext(AnalysisContext);
+  const { analysisResult, setMatchIntent } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
   const cardRef = useRef(null);
   const [sharing, setSharing] = useState(false);
@@ -33,6 +33,13 @@ const AnalysisResultScreen = ({ navigation }) => {
     { label: 'Hair', hex: analysis?.hair_color },
     { label: 'Eyes', hex: analysis?.eye_color },
   ].filter((c) => c.hex);
+
+  // Jump straight to the Product tab with the tone filter pre-applied for THIS
+  // result's season — the source is already known, so skip the last-scan dialog.
+  const handleFindMatches = () => {
+    setMatchIntent({ mode: 'filter', season });
+    navigation.navigate('Tabs', { screen: 'Product' });
+  };
 
   const handleShare = async () => {
     if (!cardRef.current) return;
@@ -110,9 +117,16 @@ const AnalysisResultScreen = ({ navigation }) => {
       )}
 
       <AppButton
-        title="View Recommended Products"
-        onPress={() => navigation.navigate('ProductCatalog')}
+        title="Find Matching Products"
+        onPress={handleFindMatches}
       />
+      <View style={styles.secondaryCta}>
+        <AppButton
+          title="View Recommended Products"
+          variant="secondary"
+          onPress={() => navigation.navigate('ProductCatalog')}
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -140,7 +154,8 @@ const styles = StyleSheet.create({
   colorText: { marginTop: 4, ...typography.caption, color: colors.text },
   hexText: { ...typography.caption, fontSize: 11, color: colors.textSecondary },
   shareSection: { marginBottom: 30 },
-  shareButtonSpacing: { marginTop: 16 }
+  shareButtonSpacing: { marginTop: 16 },
+  secondaryCta: { marginTop: 12, marginBottom: 8 }
 });
 
 export default AnalysisResultScreen;
