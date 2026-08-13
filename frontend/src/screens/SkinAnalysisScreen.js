@@ -15,7 +15,7 @@ import typography from '../constants/typography';
 const SkinAnalysisScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { performAnalysis, loading } = useSkinAnalysis();
-  const { setAnalysisResult } = useContext(AnalysisContext);
+  const { setAnalysisResult, matchIntent } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
 
   // Downscale/compress before upload so both sources produce a consistent,
@@ -83,7 +83,14 @@ const SkinAnalysisScreen = ({ navigation }) => {
     try {
       const result = await performAnalysis(photoUri);
       setAnalysisResult(result);
-      navigation.navigate('AnalysisResult');
+      // When the analysis was launched to feed the Product tab's tone features
+      // (a parked matchIntent), return there so it can resume with the fresh
+      // season instead of showing the standalone result screen.
+      if (matchIntent) {
+        navigation.navigate('Tabs', { screen: 'Product' });
+      } else {
+        navigation.navigate('AnalysisResult');
+      }
     } catch (e) {
       showAlert({ type: 'error', title: 'Analysis Failed', message: e.message });
     }

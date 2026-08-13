@@ -59,6 +59,26 @@ export const getHistory = async () => {
   return response.data;
 };
 
+// Most recent scan only, for the "use my latest result" shortcut. Backend
+// returns { status: 'success', data: {...} } or { status: 'empty', data: null }.
+export const getLatestHistory = async () => {
+  const response = await api.get('/history/latest');
+  return response.data;
+};
+
+// Full catalog ranked for a season: each product carries a match_rating
+// ('good'/'fair'/'poor'), ordered good -> fair -> poor.
+export const getProductMatches = async (season) => {
+  const response = await api.get('/products/match', { params: { season } });
+  return response.data;
+};
+
+// Single-product match check: { product, match_rating, recommendations: [...] }.
+export const getProductMatch = async (productId, season) => {
+  const response = await api.get(`/products/${productId}/match`, { params: { season } });
+  return response.data;
+};
+
 export const tryOnGarment = async (userPhotoUri, garmentRefUrl, garmentCategory) => {
   const formData = new FormData();
   formData.append('src_image', {

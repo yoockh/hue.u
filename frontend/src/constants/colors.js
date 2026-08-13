@@ -33,6 +33,16 @@ export default {
   errorSoft: '#FCE8E8',      // light red tint for error icon/badge backgrounds
   onError: '#FFFFFF',
 
+  // Match-rating semantics for season/product compatibility badges. Muted,
+  // warm-leaning green/amber/mauve so the good/fair/poor cue still reads at a
+  // glance without clashing with the pink-blue brand palette.
+  goodMatch: '#2E9E6B',      // fresh but muted green
+  goodMatchSoft: '#E3F5EC',  // green tint for the badge background
+  fairMatch: '#C98A1B',      // warm amber
+  fairMatchSoft: '#FBF0DA',  // amber tint
+  poorMatch: '#8A7C86',      // muted mauve-gray (matches textSecondary)
+  poorMatchSoft: '#F0E7EC',  // neutral tint
+
   // Overlays (kept literal — used over photos, not the themed UI)
   scrim: 'rgba(43, 31, 42, 0.55)',
 };
