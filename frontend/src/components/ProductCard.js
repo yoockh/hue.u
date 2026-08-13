@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import MatchBadge from './MatchBadge';
 import colors from '../constants/colors';
+import typography from '../constants/typography';
 
-const ProductCard = ({ product, onPress }) => {
+// `matchRating` (optional) overlays a compatibility badge on the image — set by
+// the Product tab's "From My Skin Tone" filter. Absent everywhere else so the
+// card renders exactly as before in the plain catalog.
+// `onTryProduct` (optional) adds a "Try This Product" button that kicks off the
+// season-check + try-on flow.
+const ProductCard = ({ product, onPress, matchRating, onTryProduct }) => {
   const [imgError, setImgError] = useState(false);
   // Product images are known-placeholder/broken for now (fixed separately), so
   // fall back to a tidy generic icon on a neutral surface instead of a broken image.
@@ -11,17 +18,22 @@ const ProductCard = ({ product, onPress }) => {
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
-      {showImage ? (
-        <Image
-          source={{ uri: product.image_url }}
-          style={styles.image}
-          onError={() => setImgError(true)}
-        />
-      ) : (
-        <View style={[styles.image, styles.imageFallback]}>
-          <Ionicons name="image-outline" size={30} color={colors.textSecondary} />
-        </View>
-      )}
+      <View>
+        {showImage ? (
+          <Image
+            source={{ uri: product.image_url }}
+            style={styles.image}
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <View style={[styles.image, styles.imageFallback]}>
+            <Ionicons name="image-outline" size={30} color={colors.textSecondary} />
+          </View>
+        )}
+        {matchRating ? (
+          <MatchBadge rating={matchRating} compact style={styles.badge} />
+        ) : null}
+      </View>
 
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
@@ -34,6 +46,13 @@ const ProductCard = ({ product, onPress }) => {
           </View>
         ) : null}
         {product.price ? <Text style={styles.price}>${product.price}</Text> : null}
+
+        {onTryProduct ? (
+          <TouchableOpacity style={styles.tryButton} onPress={onTryProduct} activeOpacity={0.85}>
+            <Ionicons name="shirt-outline" size={15} color={colors.onPrimary} />
+            <Text style={styles.tryButtonText}>Try This Product</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </TouchableOpacity>
   );
@@ -63,6 +82,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  badge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    // Lift the badge off the photo so the colored pill stays legible.
+    shadowColor: colors.text,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
+  },
   info: {
     padding: 10,
   },
@@ -87,6 +117,18 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: colors.primaryStrong,
   },
+  tryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    marginTop: 8,
+    backgroundColor: colors.primaryStrong,
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  tryButtonText: { ...typography.caption, fontSize: 12, fontWeight: '700', color: colors.onPrimary },
 });
 
 export default ProductCard;
