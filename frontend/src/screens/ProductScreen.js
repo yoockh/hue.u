@@ -5,10 +5,11 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getProducts, getProductMatches, getLatestHistory } from '../services/api';
+import { getProducts, getProductMatches, getLatestHistory, getProductMatch } from '../services/api';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
 import ProductCard from '../components/ProductCard';
+import MatchResultModal from '../components/MatchResultModal';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
@@ -24,7 +25,7 @@ const ALL_FILTER = 'all';
 // Product tab — full catalog plus name search, category filters, and a
 // season-aware "From My Skin Tone" filter that ranks products by match_rating.
 const ProductScreen = ({ navigation }) => {
-  const { analysisResult, matchIntent, setMatchIntent } = useContext(AnalysisContext);
+  const { analysisResult, matchIntent, setMatchIntent, setSelectedProduct } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
 
   const [products, setProducts] = useState([]);
@@ -38,6 +39,9 @@ const ProductScreen = ({ navigation }) => {
   const [toneSeason, setToneSeason] = useState(null);
   const [toneProducts, setToneProducts] = useState([]);
   const [toneLoading, setToneLoading] = useState(false);
+
+  // "Try This Product" match-result modal (shown for fair/poor picks).
+  const [matchModal, setMatchModal] = useState(null); // { product, matchRating, season, recommendations } | null
 
   useEffect(() => {
     let active = true;
@@ -78,13 +82,38 @@ const ProductScreen = ({ navigation }) => {
     }
   }, [showAlert]);
 
+  // Start the virtual try-on for a product.
+  const goToTryOn = useCallback((product) => {
+    setSelectedProduct(product);
+    navigation.navigate('UploadFullBody');
+  }, [setSelectedProduct, navigation]);
+
+  // Check one product against the season: a 'good' match goes straight to the
+  // try-on; 'fair'/'poor' opens the match-result modal (rating + alternatives +
+  // a "Try Anyway" option).
+  const startTryFlow = useCallback(async (productId, season) => {
+    try {
+      const res = await getProductMatch(productId, season);
+      const { product, match_rating: rating, recommendations } = res;
+      if (rating === 'good') {
+        goToTryOn(product);
+      } else {
+        setMatchModal({ product, matchRating: rating, season, recommendations: recommendations || [] });
+      }
+    } catch (e) {
+      showAlert({ type: 'error', title: 'Could not check this product', message: e.message || 'Please try again.' });
+    }
+  }, [goToTryOn, showAlert]);
+
   // Once a season is known (from history or a fresh scan), carry out the parked
-  // intent. Extended in a later task to also handle the 'tryOn' flow.
-  const runIntent = useCallback((mode, _productId, season) => {
+  // intent.
+  const runIntent = useCallback((mode, productId, season) => {
     if (mode === 'filter') {
       activateToneFilter(season);
+    } else if (mode === 'tryOn') {
+      startTryFlow(productId, season);
     }
-  }, [activateToneFilter]);
+  }, [activateToneFilter, startTryFlow]);
 
   // Resolve the user's season, then run `mode`. If a saved scan exists, ask
   // whether to reuse it or analyze again; otherwise go straight to analysis and
@@ -141,6 +170,8 @@ const ProductScreen = ({ navigation }) => {
     }
     setActiveFilter(filter);
   };
+
+  const handleTryProduct = (product) => resolveSeason('tryOn', product.id);
 
   // The list to render for the active filter, then narrowed by the search query.
   const visibleProducts = useMemo(() => {
@@ -258,8 +289,30 @@ const ProductScreen = ({ navigation }) => {
           )
         }
         renderItem={({ item }) => (
-          <ProductCard product={item} matchRating={item.match_rating} />
+          <ProductCard
+            product={item}
+            matchRating={item.match_rating}
+            onTryProduct={() => handleTryProduct(item)}
+          />
         )}
+      />
+
+      <MatchResultModal
+        visible={!!matchModal}
+        product={matchModal?.product}
+        matchRating={matchModal?.matchRating}
+        season={matchModal?.season}
+        recommendations={matchModal?.recommendations}
+        onTryAnyway={() => {
+          const p = matchModal.product;
+          setMatchModal(null);
+          goToTryOn(p);
+        }}
+        onPickRecommendation={(rec) => {
+          setMatchModal(null);
+          goToTryOn(rec);
+        }}
+        onClose={() => setMatchModal(null)}
       />
     </View>
   );
