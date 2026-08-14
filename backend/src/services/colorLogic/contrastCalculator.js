@@ -1,4 +1,9 @@
 function getLightness(hex) {
+  if (typeof hex !== 'string' || hex.trim() === '') {
+    throw new Error(
+      `Invalid hex color: expected a string like "#RRGGBB" but received ${JSON.stringify(hex)}.`
+    );
+  }
   const cleanHex = hex.replace('#', '');
   const r = parseInt(cleanHex.substring(0, 2), 16);
   const g = parseInt(cleanHex.substring(2, 4), 16);

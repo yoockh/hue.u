@@ -6,6 +6,11 @@ const WARM_THRESHOLD = 17;
 const COOL_THRESHOLD = 7;
 
 function hexToRgb(hexColor) {
+  if (typeof hexColor !== 'string' || hexColor.trim() === '') {
+    throw new Error(
+      `Invalid hex color: expected a string like "#RRGGBB" but received ${JSON.stringify(hexColor)}.`
+    );
+  }
   const cleanHex = hexColor.replace('#', '');
   return {
     r: parseInt(cleanHex.substring(0, 2), 16),

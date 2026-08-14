@@ -21,6 +21,14 @@ const errorMiddleware = (err, req, res, next) => {
     message = `Failed to connect to external API service: ${err.response?.data?.error_message || err.message}`;
   }
 
+  // Log server-side failures with the full stack so they are visible in the
+  // platform logs (e.g. `heroku logs --tail`). Without this a 500 surfaces to
+  // the client but leaves no trace to debug from. Client errors (4xx) are
+  // expected and kept quiet to avoid log noise. The response is unchanged.
+  if (statusCode >= 500) {
+    console.error(`[${req.method} ${req.originalUrl}] ${statusCode} ${code}:`, err);
+  }
+
   res.status(statusCode).json({
     status: 'error',
     code,
