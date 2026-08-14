@@ -16,7 +16,10 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.anonymous.frontend"
+      "package": "com.anonymous.frontend",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,7 +34,10 @@
       ]
     ],
     "extra": {
-      "apiUrl": null
+      "apiUrl": {},
+      "eas": {
+        "projectId": "e5e7206f-05bf-4871-935f-e00f31b1ad2a"
+      }
     }
   }
 }
