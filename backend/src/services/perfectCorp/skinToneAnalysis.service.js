@@ -72,6 +72,22 @@ async function analyzeSkinTone(fileBuffer, fileName, mimeType, srcFileId) {
       throw new Error('Skin color analysis results not found in response.');
     }
 
+    // skin_color is the only required field — it is the basis of the entire
+    // color analysis. Every other field (hair_color, eye_color, eyebrow_color,
+    // lip_color, the *_color_name labels, ...) is optional: a user wearing a
+    // hijab or other head covering legitimately returns no hair_color because the
+    // hair is not visible, and that is a valid result, not an error. Missing
+    // optional fields flow through as undefined and are guarded downstream.
+    if (typeof colorResults.skin_color !== 'string' || colorResults.skin_color.trim() === '') {
+      const err = new Error(
+        'Skin color analysis response is missing the required field: skin_color. ' +
+        `Fields returned under results.color: [${Object.keys(colorResults).join(', ')}].`
+      );
+      err.statusCode = 502;
+      err.code = 'incomplete_color_analysis';
+      throw err;
+    }
+
     // Surface the reusable file ids alongside the color analysis so the same
     // photo can be chained into a follow-up task (e.g. a try-on) without being
     // re-uploaded. dst_id is included when the API returns one.
@@ -81,6 +97,12 @@ async function analyzeSkinTone(fileBuffer, fileName, mimeType, srcFileId) {
       dst_id: result.data?.results?.dst_id
     };
   } catch (error) {
+    // Errors we've already classified (e.g. the incomplete-response guard above)
+    // carry a statusCode — pass them through untouched instead of remapping them
+    // to a 400 "readable" upstream error.
+    if (error.statusCode) {
+      throw error;
+    }
     if (error.code) {
       const readableMessage = getReadableError(error.code);
       const newErr = new Error(readableMessage);

@@ -33,6 +33,46 @@ export default {
   errorSoft: '#FCE8E8',      // light red tint for error icon/badge backgrounds
   onError: '#FFFFFF',
 
+  // Match-rating semantics for season/product compatibility badges. Muted,
+  // warm-leaning green/amber/mauve so the good/fair/poor cue still reads at a
+  // glance without clashing with the pink-blue brand palette.
+  goodMatch: '#2E9E6B',      // fresh but muted green
+  goodMatchSoft: '#E3F5EC',  // green tint for the badge background
+  fairMatch: '#C98A1B',      // warm amber
+  fairMatchSoft: '#FBF0DA',  // amber tint
+  poorMatch: '#8A7C86',      // muted mauve-gray (matches textSecondary)
+  poorMatchSoft: '#F0E7EC',  // neutral tint
+
   // Overlays (kept literal — used over photos, not the themed UI)
   scrim: 'rgba(43, 31, 42, 0.55)',
+
+  // --- Glass-lollipop redesign tokens ---------------------------------------
+  // Full-screen pastel background gradient (pink -> lilac -> blue), fed to
+  // expo-linear-gradient by the shared GradientBackground component.
+  gradientBackground: ['#FFE8F0', '#F2ECFF', '#E8F0FF'],
+  // Diagonal pink -> blue CTA gradient. The brand pink stays the anchor at the
+  // start so filled buttons still read as Hue.U.
+  gradientButton: ['#FF7BA8', '#8ABAF0'],
+  // Bolder stops used for the pressed state so a tap deepens the gradient.
+  gradientButtonStrong: ['#E84A7F', '#4FA3E0'],
+  // A soft pink->blue used for accents (active tab pill, scan line).
+  gradientAccent: ['#FF6B9D', '#5CC9D1'],
+
+  // Glass surfaces: a white tint laid over a BlurView.
+  glassFill: 'rgba(255, 255, 255, 0.60)',       // default card tint
+  glassFillStrong: 'rgba(255, 255, 255, 0.74)', // floating nav / dialogs
+  glassFillSoft: 'rgba(255, 255, 255, 0.42)',   // lighter tint for long lists
+  glassBorder: 'rgba(255, 255, 255, 0.85)',     // crisp 1px highlight edge
+  glassBorderSoft: 'rgba(255, 255, 255, 0.55)',
+  // Darker glass tint for panels sitting over a photo, so overlaid text stays
+  // legible without hiding the image behind it.
+  glassTintDark: 'rgba(26, 18, 28, 0.26)',
+  glassBorderDark: 'rgba(255, 255, 255, 0.45)',
+
+  // Top-edge shine highlight on capsule buttons.
+  shine: 'rgba(255, 255, 255, 0.50)',
+
+  // Soft, color-tinted shadows (glow) instead of hard black drop shadows.
+  shadowPink: '#FF6B9D',
+  shadowBlue: '#5CC9D1',
 };

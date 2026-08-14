@@ -6,17 +6,47 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
-import LoadingSpinner from '../components/LoadingSpinner';
-import CameraGuideOverlay from '../components/CameraGuideOverlay';
+import ScanningOverlay from '../components/ScanningOverlay';
+import GradientBackground from '../components/GradientBackground';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
+// Client-side face detection via Google ML Kit — requires a custom dev client
+// build with @infinitered/react-native-mlkit-face-detection. If the native
+// module isn't available (Expo Go, failed build, etc.) this resolves to null
+// and the face-detection pre-flight is silently skipped.
+let FaceDetection = null;
+try {
+  FaceDetection = require('@infinitered/react-native-mlkit-face-detection');
+} catch (_) {
+  // Native module not available — face detection will be skipped.
+}
+
 const SkinAnalysisScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { performAnalysis, loading } = useSkinAnalysis();
-  const { setAnalysisResult } = useContext(AnalysisContext);
+  const { setAnalysisResult, matchIntent } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
+
+  // Pre-flight validation: reject photos that are clearly too small for
+  // PerfectCorp's face-analysis to work — saves a wasted API credit (~20
+  // credits/attempt). Uses the ORIGINAL picker asset dimensions, not the
+  // resized output.
+  const MIN_PHOTO_DIM = 400; // px — both width and height must meet this
+
+  const validatePhoto = (asset) => {
+    const { width, height } = asset;
+    if (width && height && (width < MIN_PHOTO_DIM || height < MIN_PHOTO_DIM)) {
+      showAlert({
+        type: 'error',
+        title: 'Photo too small',
+        message: `This photo is ${width}×${height}px. Skin analysis requires at least ${MIN_PHOTO_DIM}×${MIN_PHOTO_DIM}px for accurate results. Please choose a higher-resolution photo.`,
+      });
+      return false;
+    }
+    return true;
+  };
 
   // Downscale/compress before upload so both sources produce a consistent,
   // reasonably sized image for the backend.
@@ -48,7 +78,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      await processAndSet(result.assets[0].uri);
+      const asset = result.assets[0];
+      if (!validatePhoto(asset)) return;
+      await processAndSet(asset.uri);
     }
   };
 
@@ -71,7 +103,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      await processAndSet(result.assets[0].uri);
+      const asset = result.assets[0];
+      if (!validatePhoto(asset)) return;
+      await processAndSet(asset.uri);
     }
   };
 
@@ -80,18 +114,51 @@ const SkinAnalysisScreen = ({ navigation }) => {
       showAlert({ type: 'info', title: 'Select a photo', message: 'Please choose or take a photo first.' });
       return;
     }
+
+    // Pre-flight face detection — runs the ML Kit model on the selected photo
+    // BEFORE sending it to PerfectCorp, so a "no face" rejection happens
+    // locally (free) instead of on the server (costs an API credit).
+    if (FaceDetection) {
+      try {
+        const detector = new FaceDetection.RNMLKitFaceDetector();
+        await detector.initialize();
+        const faces = await detector.detectFaces(photoUri);
+        if (!faces || faces.length === 0) {
+          showAlert({
+            type: 'error',
+            title: 'No face detected',
+            message: "We couldn't find a clear face in this photo. Please use a well-lit, front-facing selfie where your full face is visible.",
+          });
+          return; // Block upload — do NOT send to PerfectCorp.
+        }
+      } catch (detectionError) {
+        // If ML Kit itself fails (model not downloaded yet, device issue, etc.)
+        // we log and fall through — the backend's own face-detection will catch
+        // it, but we tried our best to save the credit.
+        console.warn('Client face detection failed, falling through:', detectionError.message);
+      }
+    }
+
     try {
       const result = await performAnalysis(photoUri);
       setAnalysisResult(result);
-      navigation.navigate('AnalysisResult');
+      // When the analysis was launched to feed the Product tab's tone features
+      // (a parked matchIntent), return there so it can resume with the fresh
+      // season instead of showing the standalone result screen.
+      if (matchIntent) {
+        navigation.navigate('Tabs', { screen: 'Product' });
+      } else {
+        navigation.navigate('AnalysisResult');
+      }
     } catch (e) {
       showAlert({ type: 'error', title: 'Analysis Failed', message: e.message });
     }
   };
 
   return (
-    <View style={styles.container}>
-      {loading && <LoadingSpinner message="Analyzing skin tone and palette..." />}
+    <GradientBackground>
+      <View style={styles.container}>
+      {loading && <ScanningOverlay message="Analyzing your colors..." />}
 
       <View style={styles.intro}>
         <Text style={styles.eyebrow}>SKIN TONE ANALYSIS</Text>
@@ -103,18 +170,22 @@ const SkinAnalysisScreen = ({ navigation }) => {
 
       <View style={[styles.imageContainer, photoUri ? styles.imageContainerFilled : null]}>
         {photoUri ? (
-          <>
-            <Image source={{ uri: photoUri }} style={styles.image} />
-            <CameraGuideOverlay instructions="Align your face and shoulders within the frame in good lighting." />
-          </>
+          // Clean photo preview — no overlay. The photo is a finished file
+          // from expo-image-picker, NOT a live camera feed — there is nothing
+          // to "detect" in real-time. User can retake/replace via the buttons
+          // below.
+          <Image source={{ uri: photoUri }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
-            <View style={styles.illustrationBadge}>
-              <Ionicons name="camera-outline" size={44} color={colors.primaryStrong} />
+            {/* Face-framing oval — purely a STATIC visual guide to help
+                users understand what kind of photo to take. This is NOT
+                face detection. */}
+            <View style={styles.faceGuide}>
+              <Ionicons name="person-outline" size={40} color={colors.primary} />
             </View>
             <Text style={styles.placeholderTitle}>Add your photo</Text>
             <Text style={styles.placeholderText}>
-              Face the camera straight on with your hair and shoulders visible, in good lighting.
+              Face the camera straight on with your face and shoulders visible, in good lighting.
             </Text>
           </View>
         )}
@@ -128,12 +199,13 @@ const SkinAnalysisScreen = ({ navigation }) => {
         <View style={{ height: 12 }} />
         <AppButton title="Analyze My Colors" onPress={handleAnalyze} disabled={!photoUri || loading} />
       </View>
-    </View>
+      </View>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: colors.background },
+  container: { flex: 1, padding: 20, backgroundColor: 'transparent' },
   intro: { marginBottom: 16 },
   eyebrow: { ...typography.caption, color: colors.secondaryStrong, marginBottom: 6 },
   heroTitle: { ...typography.hero, color: colors.text, marginBottom: 6 },
@@ -143,9 +215,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 24,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.glassFillSoft,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     borderStyle: 'dashed',
   },
   // Once a photo is chosen the frame becomes a solid, photo-forward card.
@@ -156,14 +228,17 @@ const styles = StyleSheet.create({
   },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 28 },
-  illustrationBadge: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.primarySoft,
+  faceGuide: {
+    width: 110,
+    height: 143,
+    borderRadius: 71,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    opacity: 0.55,
   },
   placeholderTitle: { ...typography.sectionTitle, color: colors.text, marginBottom: 6 },
   placeholderText: { ...typography.body, color: colors.textSecondary, textAlign: 'center' },

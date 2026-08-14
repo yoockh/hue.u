@@ -7,6 +7,7 @@ import { useAlert } from '../context/AlertContext';
 import { useTryOn } from '../hooks/useTryOn';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AppButton from '../components/AppButton';
+import GradientBackground from '../components/GradientBackground';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
@@ -47,9 +48,10 @@ const UploadFullBodyScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <GradientBackground>
+      <View style={styles.container}>
       {loading && <LoadingSpinner message="Generating virtual try-on..." />}
-      
+
       <Text style={styles.title}>Upload Full Body Photo</Text>
       <Text style={styles.subtitle}>To try on: {selectedProduct?.name}</Text>
 
@@ -71,12 +73,13 @@ const UploadFullBodyScreen = ({ navigation }) => {
         <View style={{ height: 10 }} />
         <AppButton title="See Try-On" onPress={handleTryOn} disabled={!photoUri || loading} />
       </View>
-    </View>
+      </View>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: colors.background },
+  container: { flex: 1, padding: 16, backgroundColor: 'transparent' },
   title: { ...typography.title, color: colors.text },
   subtitle: { ...typography.label, color: colors.textSecondary, marginBottom: 20 },
   imageContainer: {
@@ -84,9 +87,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 20,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.glassFillSoft,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     borderStyle: 'dashed',
   },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },
