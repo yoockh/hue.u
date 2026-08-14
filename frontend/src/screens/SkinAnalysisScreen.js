@@ -12,11 +12,41 @@ import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
+// Client-side face detection via Google ML Kit — requires a custom dev client
+// build with @infinitered/react-native-mlkit-face-detection. If the native
+// module isn't available (Expo Go, failed build, etc.) this resolves to null
+// and the face-detection pre-flight is silently skipped.
+let FaceDetection = null;
+try {
+  FaceDetection = require('@infinitered/react-native-mlkit-face-detection');
+} catch (_) {
+  // Native module not available — face detection will be skipped.
+}
+
 const SkinAnalysisScreen = ({ navigation }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { performAnalysis, loading } = useSkinAnalysis();
   const { setAnalysisResult, matchIntent } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
+
+  // Pre-flight validation: reject photos that are clearly too small for
+  // PerfectCorp's face-analysis to work — saves a wasted API credit (~20
+  // credits/attempt). Uses the ORIGINAL picker asset dimensions, not the
+  // resized output.
+  const MIN_PHOTO_DIM = 400; // px — both width and height must meet this
+
+  const validatePhoto = (asset) => {
+    const { width, height } = asset;
+    if (width && height && (width < MIN_PHOTO_DIM || height < MIN_PHOTO_DIM)) {
+      showAlert({
+        type: 'error',
+        title: 'Photo too small',
+        message: `This photo is ${width}×${height}px. Skin analysis requires at least ${MIN_PHOTO_DIM}×${MIN_PHOTO_DIM}px for accurate results. Please choose a higher-resolution photo.`,
+      });
+      return false;
+    }
+    return true;
+  };
 
   // Downscale/compress before upload so both sources produce a consistent,
   // reasonably sized image for the backend.
@@ -48,7 +78,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      await processAndSet(result.assets[0].uri);
+      const asset = result.assets[0];
+      if (!validatePhoto(asset)) return;
+      await processAndSet(asset.uri);
     }
   };
 
@@ -71,7 +103,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      await processAndSet(result.assets[0].uri);
+      const asset = result.assets[0];
+      if (!validatePhoto(asset)) return;
+      await processAndSet(asset.uri);
     }
   };
 
@@ -80,6 +114,31 @@ const SkinAnalysisScreen = ({ navigation }) => {
       showAlert({ type: 'info', title: 'Select a photo', message: 'Please choose or take a photo first.' });
       return;
     }
+
+    // Pre-flight face detection — runs the ML Kit model on the selected photo
+    // BEFORE sending it to PerfectCorp, so a "no face" rejection happens
+    // locally (free) instead of on the server (costs an API credit).
+    if (FaceDetection) {
+      try {
+        const detector = new FaceDetection.RNMLKitFaceDetector();
+        await detector.initialize();
+        const faces = await detector.detectFaces(photoUri);
+        if (!faces || faces.length === 0) {
+          showAlert({
+            type: 'error',
+            title: 'No face detected',
+            message: "We couldn't find a clear face in this photo. Please use a well-lit, front-facing selfie where your full face is visible.",
+          });
+          return; // Block upload — do NOT send to PerfectCorp.
+        }
+      } catch (detectionError) {
+        // If ML Kit itself fails (model not downloaded yet, device issue, etc.)
+        // we log and fall through — the backend's own face-detection will catch
+        // it, but we tried our best to save the credit.
+        console.warn('Client face detection failed, falling through:', detectionError.message);
+      }
+    }
+
     try {
       const result = await performAnalysis(photoUri);
       setAnalysisResult(result);
