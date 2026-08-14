@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import ScanningAvatar from '../components/ScanningAvatar';
 import AppButton from '../components/AppButton';
+import GradientBackground from '../components/GradientBackground';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
@@ -12,7 +13,7 @@ const ILLUSTRATION_HEIGHT = 280;
 // Home tab. Opens the app: hero illustration (with a help shortcut to the
 // education screen) and the primary CTA into the existing analysis flow.
 const DashboardScreen = ({ navigation }) => (
-  <View style={styles.container}>
+  <GradientBackground>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.illustrationCard}>
         <ScanningAvatar source={avatarImage} height={ILLUSTRATION_HEIGHT} />
@@ -37,19 +38,18 @@ const DashboardScreen = ({ navigation }) => (
         onPress={() => navigation.navigate('SkinAnalysis')}
       />
     </ScrollView>
-  </View>
+  </GradientBackground>
 );
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 20, flexGrow: 1, justifyContent: 'center' },
+  content: { padding: 20, paddingBottom: 110, flexGrow: 1, justifyContent: 'center' },
   illustrationCard: {
     height: ILLUSTRATION_HEIGHT,
-    borderRadius: 24,
+    borderRadius: 28,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.glassFillSoft,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     marginBottom: 28,
     position: 'relative',
   },
