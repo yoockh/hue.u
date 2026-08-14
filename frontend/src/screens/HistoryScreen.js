@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getHistory } from '../services/api';
 import { AnalysisContext } from '../context/AnalysisContext';
 import ComingSoon from '../components/ComingSoon';
 import ColorSwatch from '../components/ColorSwatch';
+import GradientBackground from '../components/GradientBackground';
+import GlassCard from '../components/GlassCard';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
@@ -81,73 +83,72 @@ const HistoryScreen = ({ navigation }) => {
   };
 
   if (loading) {
-    return <View style={styles.centered}><ActivityIndicator size="large" color={colors.primary} /></View>;
+    return (
+      <GradientBackground>
+        <View style={styles.centered}><ActivityIndicator size="large" color={colors.primaryStrong} /></View>
+      </GradientBackground>
+    );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
+      <GradientBackground>
+        <View style={styles.centered}><Text style={styles.errorText}>{error}</Text></View>
+      </GradientBackground>
     );
   }
 
   if (items.length === 0) {
     return (
-      <ComingSoon
-        icon="time-outline"
-        title="No history yet"
-        message="Your color analyses will appear here. Start your first scan to discover your season."
-      />
+      <GradientBackground>
+        <ComingSoon
+          icon="time-outline"
+          title="No history yet"
+          message="Your color analyses will appear here. Start your first scan to discover your season."
+        />
+      </GradientBackground>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <GradientBackground>
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => openDetail(item)} activeOpacity={0.85}>
-            <HistoryThumb uri={item.photo_url} />
-            <View style={styles.cardBody}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.season}>{capitalize(item.season)}</Text>
-                <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+          <Pressable onPress={() => openDetail(item)} style={styles.cardPress}>
+            <GlassCard padding={12} intensity={36} contentStyle={styles.cardRow}>
+              <HistoryThumb uri={item.photo_url} />
+              <View style={styles.cardBody}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.season}>{capitalize(item.season)}</Text>
+                  <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+                </View>
+                <View style={styles.swatchRow}>
+                  {(item.palette || []).slice(0, 5).map((c, i) => (
+                    <ColorSwatch key={i} color={c.hex} size={22} />
+                  ))}
+                </View>
               </View>
-              <View style={styles.swatchRow}>
-                {(item.palette || []).slice(0, 5).map((c, i) => (
-                  <ColorSwatch key={i} color={c.hex} size={22} />
-                ))}
-              </View>
-            </View>
-          </TouchableOpacity>
+            </GlassCard>
+          </Pressable>
         )}
       />
-    </View>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: colors.background },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   errorText: { ...typography.body, color: colors.error, textAlign: 'center' },
-  list: { padding: 16 },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 12,
-    marginBottom: 12,
-  },
+  list: { padding: 16, paddingBottom: 110 },
+  cardPress: { marginBottom: 14 },
+  cardRow: { flexDirection: 'row', alignItems: 'center' },
   thumb: {
     width: 56,
     height: 56,
-    borderRadius: 12,
+    borderRadius: 14,
     marginRight: 12,
     backgroundColor: colors.surfaceMuted,
   },

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
 import { AnalysisContext } from '../context/AnalysisContext';
 import AppButton from '../components/AppButton';
+import GradientBackground from '../components/GradientBackground';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
@@ -16,7 +17,8 @@ const TryOnResultScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <GradientBackground>
+      <View style={styles.container}>
       {resultImageUrl ? (
         originalPhotoUri ? (
           <View style={styles.compareRow}>
@@ -43,12 +45,13 @@ const TryOnResultScreen = ({ route, navigation }) => {
         <View style={{ height: 10 }} />
         <AppButton title="Start Over" variant="danger" onPress={handleStartOver} />
       </View>
-    </View>
+      </View>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: 'transparent' },
   image: { flex: 1, width: '100%' },
   compareRow: { flex: 1, flexDirection: 'row' },
   compareColumn: { flex: 1 },

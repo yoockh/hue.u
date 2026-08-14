@@ -10,6 +10,7 @@ import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
 import ProductCard from '../components/ProductCard';
 import MatchResultModal from '../components/MatchResultModal';
+import GradientBackground from '../components/GradientBackground';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
@@ -252,19 +253,23 @@ const ProductScreen = ({ navigation }) => {
   );
 
   if (loading) {
-    return <View style={styles.centered}><ActivityIndicator size="large" color={colors.primary} /></View>;
+    return (
+      <GradientBackground>
+        <View style={styles.centered}><ActivityIndicator size="large" color={colors.primaryStrong} /></View>
+      </GradientBackground>
+    );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
+      <GradientBackground>
+        <View style={styles.centered}><Text style={styles.errorText}>{error}</Text></View>
+      </GradientBackground>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <GradientBackground>
       <FlatList
         data={visibleProducts}
         keyExtractor={(item) => String(item.id)}
@@ -314,25 +319,24 @@ const ProductScreen = ({ navigation }) => {
         }}
         onClose={() => setMatchModal(null)}
       />
-    </View>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: colors.background },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   centeredPad: { alignItems: 'center', paddingVertical: 48, gap: 10 },
-  list: { padding: 16 },
+  list: { padding: 16, paddingBottom: 110 },
   row: { justifyContent: 'space-between' },
   title: { ...typography.title, color: colors.text, marginBottom: 14 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassFillStrong,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     paddingHorizontal: 14,
     paddingVertical: 10,
     marginBottom: 12,
@@ -344,8 +348,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: colors.secondary,
-    backgroundColor: colors.surface,
+    borderColor: colors.glassBorder,
+    backgroundColor: colors.glassFillStrong,
     paddingHorizontal: 14,
     paddingVertical: 8,
   },

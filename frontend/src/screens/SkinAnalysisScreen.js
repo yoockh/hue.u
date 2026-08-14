@@ -6,8 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
-import LoadingSpinner from '../components/LoadingSpinner';
+import ScanningOverlay from '../components/ScanningOverlay';
 import CameraGuideOverlay from '../components/CameraGuideOverlay';
+import GradientBackground from '../components/GradientBackground';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
@@ -97,8 +98,9 @@ const SkinAnalysisScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {loading && <LoadingSpinner message="Analyzing skin tone and palette..." />}
+    <GradientBackground>
+      <View style={styles.container}>
+      {loading && <ScanningOverlay message="Analyzing your colors..." />}
 
       <View style={styles.intro}>
         <Text style={styles.eyebrow}>SKIN TONE ANALYSIS</Text>
@@ -135,12 +137,13 @@ const SkinAnalysisScreen = ({ navigation }) => {
         <View style={{ height: 12 }} />
         <AppButton title="Analyze My Colors" onPress={handleAnalyze} disabled={!photoUri || loading} />
       </View>
-    </View>
+      </View>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: colors.background },
+  container: { flex: 1, padding: 20, backgroundColor: 'transparent' },
   intro: { marginBottom: 16 },
   eyebrow: { ...typography.caption, color: colors.secondaryStrong, marginBottom: 6 },
   heroTitle: { ...typography.hero, color: colors.text, marginBottom: 6 },
@@ -150,9 +153,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 24,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.glassFillSoft,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     borderStyle: 'dashed',
   },
   // Once a photo is chosen the frame becomes a solid, photo-forward card.
