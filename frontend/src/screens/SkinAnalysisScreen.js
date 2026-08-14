@@ -112,7 +112,7 @@ const SkinAnalysisScreen = ({ navigation }) => {
         {photoUri ? (
           <>
             <Image source={{ uri: photoUri }} style={styles.image} />
-            <CameraGuideOverlay instructions="Align your face and shoulders within the frame in good lighting." />
+            <CameraGuideOverlay instructions="Position your face within the oval, in good lighting." />
           </>
         ) : (
           <View style={styles.placeholder}>
