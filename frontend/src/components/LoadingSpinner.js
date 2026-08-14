@@ -1,28 +1,34 @@
 import React from 'react';
 import { ActivityIndicator, View, StyleSheet, Text } from 'react-native';
+import { BlurView } from 'expo-blur';
 import colors from '../constants/colors';
+import typography from '../constants/typography';
 
+// Full-screen glass loading overlay (used by flows without the dedicated scan
+// animation, e.g. the virtual try-on). Frosted wash so the screen behind stays
+// faintly visible instead of a flat white block.
 const LoadingSpinner = ({ message = 'Loading...' }) => (
   <View style={styles.container}>
-    <ActivityIndicator size="large" color={colors.primary} />
+    <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
+    <View style={[StyleSheet.absoluteFill, styles.wash]} />
+    <ActivityIndicator size="large" color={colors.primaryStrong} />
     <Text style={styles.message}>{message}</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.8)',
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
     zIndex: 10,
   },
+  wash: { backgroundColor: 'rgba(255,246,250,0.4)' },
   message: {
-    marginTop: 10,
-    color: colors.textSecondary,
-    fontSize: 16,
+    marginTop: 14,
+    ...typography.body,
+    fontWeight: '600',
+    color: colors.text,
   },
 });
 
