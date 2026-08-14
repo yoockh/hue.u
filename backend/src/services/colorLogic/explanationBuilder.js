@@ -6,9 +6,18 @@ const UNDERTONE_PHRASES = {
   neutral: 'balanced, neutral undertones'
 };
 
+// Two variants each: one that names hair (the usual case) and one that avoids it
+// for photos where hair is not visible (e.g. hijab / head covering), so the
+// sentence never implies a feature that was not analyzed.
 const CONTRAST_PHRASES = {
-  high: 'high contrast between your skin, hair, and eyes',
-  low: 'soft, low contrast between your skin, hair, and eyes'
+  high: {
+    withHair: 'high contrast between your skin, hair, and eyes',
+    noHair: 'high contrast across your visible features'
+  },
+  low: {
+    withHair: 'soft, low contrast between your skin, hair, and eyes',
+    noHair: 'soft, low contrast across your visible features'
+  }
 };
 
 const SEASON_PHRASES = {
@@ -25,10 +34,14 @@ function capitalize(word) {
 
 // Build a single sentence for a given undertone / contrast / season combination.
 // The three inputs together yield a distinct, natural-language "why" for each of
-// the six valid undertone x contrast combinations.
-function buildExplanation(season, undertone, contrast) {
+// the six valid undertone x contrast combinations. `options.hairVisible` (default
+// true) picks a contrast phrase that avoids mentioning hair when it wasn't seen.
+function buildExplanation(season, undertone, contrast, { hairVisible = true } = {}) {
   const undertonePhrase = UNDERTONE_PHRASES[undertone] || 'your undertones';
-  const contrastPhrase = CONTRAST_PHRASES[contrast] || 'your natural contrast';
+  const contrastVariants = CONTRAST_PHRASES[contrast];
+  const contrastPhrase = contrastVariants
+    ? (hairVisible ? contrastVariants.withHair : contrastVariants.noHair)
+    : 'your natural contrast';
   const seasonPhrase = SEASON_PHRASES[season] || 'colors that suit you';
 
   return `Your ${undertonePhrase} and ${contrastPhrase} place you in the ` +

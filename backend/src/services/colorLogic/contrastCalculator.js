@@ -14,13 +14,23 @@ function getLightness(hex) {
   return (lightness / 255) * 100;
 }
 
-function calculateContrast(skinHex, hairHex, eyeHex) {
-  const skinL = getLightness(skinHex);
-  const hairL = getLightness(hairHex);
-  const eyeL = getLightness(eyeHex);
+function calculateContrast(...hexes) {
+  // Contrast is the lightness spread across the user's visible features. Accept
+  // any number of feature colors and ignore the ones the API did not return
+  // (e.g. hair_color is absent for hijab / head-covering photos), so a partial
+  // feature set still yields a valid result instead of crashing on undefined.
+  const lightnesses = hexes
+    .filter((hex) => typeof hex === 'string' && hex.trim() !== '')
+    .map(getLightness);
 
-  const maxL = Math.max(skinL, hairL, eyeL);
-  const minL = Math.min(skinL, hairL, eyeL);
+  // With fewer than two measurable features there is no spread to speak of;
+  // treat that as soft (low) contrast rather than failing.
+  if (lightnesses.length < 2) {
+    return 'low';
+  }
+
+  const maxL = Math.max(...lightnesses);
+  const minL = Math.min(...lightnesses);
   const diff = maxL - minL;
 
   // Threshold of 35% difference marks high contrast features
