@@ -15,17 +15,26 @@ const env = {
   // spans multiple lines); convert them back to real newlines for the SDK.
   FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY
     ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-    : undefined
+    : undefined,
+
+  // Cloudinary credentials for storing scan photos (the three standard SDK vars).
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET
 };
 
 // Environment variables the server cannot run without: the PerfectCorp/YouCam V2
-// API key (Bearer token on every request) and the Firebase service-account
-// credentials used to persist and read scan history.
+// API key (Bearer token on every request), the Firebase service-account
+// credentials used to persist and read scan history, and the Cloudinary
+// credentials used to host scan photos.
 const REQUIRED_ENV = [
   'PERFECTCORP_API_KEY',
   'FIREBASE_PROJECT_ID',
   'FIREBASE_CLIENT_EMAIL',
-  'FIREBASE_PRIVATE_KEY'
+  'FIREBASE_PRIVATE_KEY',
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET'
 ];
 
 // Fail fast at boot instead of surfacing confusing 401s on the first request.

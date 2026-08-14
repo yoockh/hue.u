@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { getHistory } from '../services/api';
 import { AnalysisContext } from '../context/AnalysisContext';
 import ComingSoon from '../components/ComingSoon';
@@ -17,6 +18,20 @@ const formatDate = (iso) => {
   const date = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
   return `${date} · ${time}`;
+};
+
+// Scan photo thumbnail with a tidy fallback for older records (no photo_url) or
+// images that fail to load.
+const HistoryThumb = ({ uri }) => {
+  const [failed, setFailed] = useState(false);
+  if (!uri || failed) {
+    return (
+      <View style={[styles.thumb, styles.thumbFallback]}>
+        <Ionicons name="image-outline" size={24} color={colors.textSecondary} />
+      </View>
+    );
+  }
+  return <Image source={{ uri }} style={styles.thumb} onError={() => setFailed(true)} />;
 };
 
 const HistoryScreen = ({ navigation }) => {
@@ -95,14 +110,17 @@ const HistoryScreen = ({ navigation }) => {
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} onPress={() => openDetail(item)} activeOpacity={0.85}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.season}>{capitalize(item.season)}</Text>
-              <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
-            </View>
-            <View style={styles.swatchRow}>
-              {(item.palette || []).slice(0, 6).map((c, i) => (
-                <ColorSwatch key={i} color={c.hex} size={26} />
-              ))}
+            <HistoryThumb uri={item.photo_url} />
+            <View style={styles.cardBody}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.season}>{capitalize(item.season)}</Text>
+                <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+              </View>
+              <View style={styles.swatchRow}>
+                {(item.palette || []).slice(0, 5).map((c, i) => (
+                  <ColorSwatch key={i} color={c.hex} size={22} />
+                ))}
+              </View>
             </View>
           </TouchableOpacity>
         )}
@@ -117,16 +135,27 @@ const styles = StyleSheet.create({
   errorText: { ...typography.body, color: colors.error, textAlign: 'center' },
   list: { padding: 16 },
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 16,
+    padding: 12,
     marginBottom: 12,
   },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  thumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    marginRight: 12,
+    backgroundColor: colors.surfaceMuted,
+  },
+  thumbFallback: { justifyContent: 'center', alignItems: 'center' },
+  cardBody: { flex: 1 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   season: { ...typography.sectionTitle, color: colors.primaryStrong },
-  date: { ...typography.caption, color: colors.textSecondary },
+  date: { ...typography.caption, color: colors.textSecondary, flexShrink: 1, textAlign: 'right', marginLeft: 8 },
   swatchRow: { flexDirection: 'row' },
 });
 

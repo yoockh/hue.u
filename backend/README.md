@@ -144,6 +144,8 @@ flowchart LR
 | **Multer** | 2.x | Multipart/form-data handling for image uploads; uses in-memory storage and an image-only filter (10 MB cap). |
 | **CORS** | 2.x | Allows the Expo/React Native frontend to call the API cross-origin. |
 | **dotenv** | 17.x | Loads PerfectCorp credentials and config from `.env`. |
+| **firebase-admin** | 14.x | Firestore access (modular API) to persist and read scan history. |
+| **Cloudinary** | 2.x | Hosts the user's scan photo permanently and returns a secure URL saved with each history record. |
 | **node:test + node:assert** | built-in | Unit tests for the pure color-logic functions — no external test framework. |
 
 ---
@@ -239,10 +241,13 @@ Defined and validated in [`src/config/env.js`](src/config/env.js). Copy `.env.ex
 | `FIREBASE_PROJECT_ID` | ✅ | Firebase project id (from the service-account JSON). Used by Firestore for scan history. |
 | `FIREBASE_CLIENT_EMAIL` | ✅ | Service-account client email (`...@<project>.iam.gserviceaccount.com`). |
 | `FIREBASE_PRIVATE_KEY` | ✅ | Service-account private key. Store on one line with literal `\n` for newlines, in quotes — `env.js` converts them back to real newlines. |
+| `CLOUDINARY_CLOUD_NAME` | ✅ | Cloudinary cloud name. Hosts scan photos for the history feature. From the [API Keys page](https://console.cloudinary.com/app/settings/api-keys). |
+| `CLOUDINARY_API_KEY` | ✅ | Cloudinary API key. |
+| `CLOUDINARY_API_SECRET` | ✅ | Cloudinary API secret. |
 | `PERFECTCORP_BASE_URL` | ⬜ | API base URL. Defaults to `https://yce-api-01.makeupar.com`. |
 | `PORT` | ⬜ | HTTP port. Defaults to `5000`. |
 
-`server.js` calls `validateEnv()` before binding the port, so a missing key fails fast with a clear message instead of a confusing `401` on the first request. **Note:** the Firebase credentials are now required — the server will not boot without them (they power `/api/history` and history persistence).
+`server.js` calls `validateEnv()` before binding the port, so a missing key fails fast with a clear message instead of a confusing `401` on the first request. **Note:** the Firebase and Cloudinary credentials are now required — the server will not boot without them (they power scan-history persistence, `/api/history`, and scan-photo hosting).
 
 ---
 
