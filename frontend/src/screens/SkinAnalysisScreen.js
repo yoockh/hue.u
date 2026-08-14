@@ -7,7 +7,6 @@ import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
 import ScanningOverlay from '../components/ScanningOverlay';
-import CameraGuideOverlay from '../components/CameraGuideOverlay';
 import GradientBackground from '../components/GradientBackground';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
@@ -112,18 +111,22 @@ const SkinAnalysisScreen = ({ navigation }) => {
 
       <View style={[styles.imageContainer, photoUri ? styles.imageContainerFilled : null]}>
         {photoUri ? (
-          <>
-            <Image source={{ uri: photoUri }} style={styles.image} />
-            <CameraGuideOverlay instructions="Position your face within the oval, in good lighting." />
-          </>
+          // Clean photo preview — no overlay. The photo is a finished file
+          // from expo-image-picker, NOT a live camera feed — there is nothing
+          // to "detect" in real-time. User can retake/replace via the buttons
+          // below.
+          <Image source={{ uri: photoUri }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
-            <View style={styles.illustrationBadge}>
-              <Ionicons name="camera-outline" size={44} color={colors.primaryStrong} />
+            {/* Face-framing oval — purely a STATIC visual guide to help
+                users understand what kind of photo to take. This is NOT
+                face detection. */}
+            <View style={styles.faceGuide}>
+              <Ionicons name="person-outline" size={40} color={colors.primary} />
             </View>
             <Text style={styles.placeholderTitle}>Add your photo</Text>
             <Text style={styles.placeholderText}>
-              Face the camera straight on with your hair and shoulders visible, in good lighting.
+              Face the camera straight on with your face and shoulders visible, in good lighting.
             </Text>
           </View>
         )}
@@ -166,14 +169,17 @@ const styles = StyleSheet.create({
   },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 28 },
-  illustrationBadge: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.primarySoft,
+  faceGuide: {
+    width: 110,
+    height: 143,
+    borderRadius: 71,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    opacity: 0.55,
   },
   placeholderTitle: { ...typography.sectionTitle, color: colors.text, marginBottom: 6 },
   placeholderText: { ...typography.body, color: colors.textSecondary, textAlign: 'center' },
