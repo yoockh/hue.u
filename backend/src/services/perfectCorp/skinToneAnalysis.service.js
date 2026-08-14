@@ -72,19 +72,15 @@ async function analyzeSkinTone(fileBuffer, fileName, mimeType, srcFileId) {
       throw new Error('Skin color analysis results not found in response.');
     }
 
-    // The color-logic step expects three hex strings (skin/hair/eye). If the
-    // live API omits one, returns it as null, or nests it differently, the value
-    // reaches .replace() downstream as undefined and throws a cryptic
-    // "Cannot read properties of undefined (reading 'replace')". Validate here,
-    // at the data source, and fail with an actionable message that names the
-    // missing field(s) and lists the keys the API actually returned.
-    const REQUIRED_COLOR_FIELDS = ['skin_color', 'hair_color', 'eye_color'];
-    const missingFields = REQUIRED_COLOR_FIELDS.filter(
-      (field) => typeof colorResults[field] !== 'string' || colorResults[field].trim() === ''
-    );
-    if (missingFields.length > 0) {
+    // skin_color is the only required field — it is the basis of the entire
+    // color analysis. Every other field (hair_color, eye_color, eyebrow_color,
+    // lip_color, the *_color_name labels, ...) is optional: a user wearing a
+    // hijab or other head covering legitimately returns no hair_color because the
+    // hair is not visible, and that is a valid result, not an error. Missing
+    // optional fields flow through as undefined and are guarded downstream.
+    if (typeof colorResults.skin_color !== 'string' || colorResults.skin_color.trim() === '') {
       const err = new Error(
-        `Skin color analysis response is missing required field(s): ${missingFields.join(', ')}. ` +
+        'Skin color analysis response is missing the required field: skin_color. ' +
         `Fields returned under results.color: [${Object.keys(colorResults).join(', ')}].`
       );
       err.statusCode = 502;

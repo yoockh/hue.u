@@ -24,3 +24,21 @@ test('always returns either high or low', () => {
   const result = calculateContrast('#C8A27C', '#5A4632', '#3B2A1A');
   assert.ok(result === 'high' || result === 'low');
 });
+
+test('ignores missing (null/undefined) features instead of throwing', () => {
+  // Hijab / head-covering case: no hair_color. Contrast is still measurable from
+  // the remaining features (very light skin + dark eyes -> high).
+  assert.equal(calculateContrast('#FFFFFF', null, '#1A1A1A'), 'high');
+  assert.equal(calculateContrast('#FFFFFF', undefined, '#1A1A1A'), 'high');
+});
+
+test('uses whatever valid features remain (skin + eyebrow + lip, no hair)', () => {
+  // No hair, no eyes — skin, eyebrow and lip still give a valid spread.
+  const result = calculateContrast('#F0D5B8', null, undefined, '#2A1B10', '#B5544E');
+  assert.ok(result === 'high' || result === 'low');
+});
+
+test('falls back to low contrast when fewer than two features are present', () => {
+  assert.equal(calculateContrast('#E0AC69'), 'low');
+  assert.equal(calculateContrast('#E0AC69', null, undefined), 'low');
+});
