@@ -7,7 +7,7 @@
     "color_hex": "#182B49",
     "price": 78.0,
     "currency": "USD",
-    "garment_category": "full_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543737/1.png"
   },
   {
@@ -18,7 +18,7 @@
     "color_hex": "#A8B89A",
     "price": 84.0,
     "currency": "USD",
-    "garment_category": "full_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543737/2.png"
   },
   {
@@ -29,7 +29,7 @@
     "color_hex": "#D4A72C",
     "price": 72.0,
     "currency": "USD",
-    "garment_category": "full_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543737/3.png"
   },
   {
@@ -40,7 +40,7 @@
     "color_hex": "#6E2638",
     "price": 148.0,
     "currency": "USD",
-    "garment_category": "full_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543737/4.png"
   },
   {
@@ -51,7 +51,7 @@
     "color_hex": "#B7C9A8",
     "price": 96.0,
     "currency": "USD",
-    "garment_category": "full_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543736/5.png"
   },
   {
@@ -62,7 +62,7 @@
     "color_hex": "#87CEEB",
     "price": 68.0,
     "currency": "USD",
-    "garment_category": "dress_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543736/6.png"
   },
   {
@@ -73,7 +73,7 @@
     "color_hex": "#FBCEB1",
     "price": 74.0,
     "currency": "USD",
-    "garment_category": "activewear_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543736/7.png"
   },
   {
@@ -84,7 +84,7 @@
     "color_hex": "#FF6F91",
     "price": 72.0,
     "currency": "USD",
-    "garment_category": "layered_set",
+    "garment_category": "full_body",
     "image_url": "https://res.cloudinary.com/dbhejyy7z/image/upload/v1786543736/8.png"
   }
 ]

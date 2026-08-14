@@ -7,6 +7,7 @@ import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
 import ScanningOverlay from '../components/ScanningOverlay';
+import CameraGuideOverlay from '../components/CameraGuideOverlay';
 import GradientBackground from '../components/GradientBackground';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
@@ -170,11 +171,10 @@ const SkinAnalysisScreen = ({ navigation }) => {
 
       <View style={[styles.imageContainer, photoUri ? styles.imageContainerFilled : null]}>
         {photoUri ? (
-          // Clean photo preview — no overlay. The photo is a finished file
-          // from expo-image-picker, NOT a live camera feed — there is nothing
-          // to "detect" in real-time. User can retake/replace via the buttons
-          // below.
-          <Image source={{ uri: photoUri }} style={styles.image} />
+          <View style={{ flex: 1 }}>
+            <Image source={{ uri: photoUri }} style={styles.image} />
+            <CameraGuideOverlay />
+          </View>
         ) : (
           <View style={styles.placeholder}>
             {/* Face-framing oval — purely a STATIC visual guide to help

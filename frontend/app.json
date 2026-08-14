@@ -2,6 +2,7 @@
   "expo": {
     "name": "frontend",
     "slug": "frontend",
+    "scheme": "hueu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -35,7 +36,6 @@
       ]
     ],
     "extra": {
-      "apiUrl": {},
       "eas": {
         "projectId": "e5e7206f-05bf-4871-935f-e00f31b1ad2a"
       }
