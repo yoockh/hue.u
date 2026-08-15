@@ -14,9 +14,11 @@ import typography from '../constants/typography';
 //   secondary translucent white glass, teal label + border
 //   danger    translucent white glass, red label + border
 // Sizes: 'md' (default) and 'sm' (compact, e.g. "Try This Product").
+// Secondary/danger use a SINGLE brand color for BOTH the border and the label
+// (border === text) so the edge never looks like a mismatched two-tone outline.
 const VARIANTS = {
   primary: { text: colors.onPrimary, glow: colors.shadowPink, gradient: true },
-  secondary: { text: colors.secondaryStrong, glow: colors.shadowBlue, border: colors.secondary },
+  secondary: { text: colors.secondaryStrong, glow: colors.shadowBlue, border: colors.secondaryStrong },
   danger: { text: colors.error, glow: colors.error, border: colors.error },
 };
 
@@ -123,12 +125,11 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.45 },
   clip: { overflow: 'hidden' },
   fill: { alignItems: 'center', justifyContent: 'center' },
-  // Secondary/danger fill. Near-opaque white so the pastel page gradient does
-  // NOT bleed through (which made these read as a washed pink-teal gradient with
-  // an "inverted" look). Clean white + a thin solid brand border + brand-color
-  // label = a proper secondary button.
+  // Secondary/danger fill. FULLY SOLID white (not translucent) so the pastel
+  // page gradient never bleeds through the edges — clean white + a thin solid
+  // single-color brand border + matching brand label.
   glass: {
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
   },
   // Top-half highlight; sits above the gradient, below the label.
