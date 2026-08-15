@@ -5,26 +5,23 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
-// Full-pill button used everywhere in the redesign (replaces AppButton). Press
-// gives a soft scale-down + a deeper shadow via the built-in Animated API on a
-// Pressable — no TouchableOpacity, no reanimated dependency.
+// Full-pill button used everywhere (replaces AppButton). Press gives a soft
+// scale-down via the built-in Animated API on a Pressable — no reanimated dep.
 //
-// Variants:
-//   primary   pink->blue gradient fill, white label, glass shine on top
-//   secondary translucent white glass, teal label + border
-//   danger    translucent white glass, red label + border
-// Sizes: 'md' (default) and 'sm' (compact, e.g. "Try This Product").
-// Spec-exact variants.
-//   primary   — #FF4D8D -> #5AC8FA horizontal gradient, #FFFFFF text, NO border,
-//               soft pink glow.
-//   secondary — SOLID #FFFFFF, 1px #2DBEBE border on all four sides, #2DBEBE
-//               text, and NO colored shadow (a tinted shadow was reading as an
-//               uneven two-tone edge).
-//   danger    — same flat treatment, red border+text.
+// Variants (all SOLID fills — never a bordered inner View, which clips into
+// broken "bracket" fragments inside the rounded pill):
+//   primary   — #FF4D8D -> #5AC8FA horizontal gradient, white label.
+//   secondary — SOLID #2DBEBE block, white label, NO border, soft teal shadow.
+//   danger    — SOLID red block, white label, NO border (same pattern).
+//
+// IMPORTANT: there is intentionally NO borderWidth anywhere in this component.
+// A previous version put a 1px border on a non-rounded inner View that the
+// rounded parent clipped, so the border only showed on part of the edge. Solid
+// fills clip cleanly into the capsule, so no border is used at all.
 const VARIANTS = {
   primary: { text: '#FFFFFF', glow: colors.shadowPink, gradient: true },
-  secondary: { text: colors.buttonSecondary, border: colors.buttonSecondary, flat: true },
-  danger: { text: colors.error, border: colors.error, flat: true },
+  secondary: { text: '#FFFFFF', fill: colors.buttonSecondary, glow: colors.buttonSecondary },
+  danger: { text: '#FFFFFF', fill: colors.error, glow: colors.error },
 };
 
 const SIZES = {
@@ -46,19 +43,12 @@ const CapsuleButton = ({
   const v = VARIANTS[variant] || VARIANTS.primary;
   const s = SIZES[size] || SIZES.md;
   const scale = useRef(new Animated.Value(1)).current;
-  const pressed = useRef(new Animated.Value(0)).current;
 
-  const animateTo = (toScale, toPressed) => {
-    Animated.parallel([
-      Animated.spring(scale, { toValue: toScale, useNativeDriver: true, speed: 40, bounciness: 6 }),
-      Animated.timing(pressed, { toValue: toPressed, duration: 120, useNativeDriver: true }),
-    ]).start();
+  const animateTo = (toScale) => {
+    Animated.spring(scale, { toValue: toScale, useNativeDriver: true, speed: 40, bounciness: 6 }).start();
   };
 
   const isDisabled = disabled || loading;
-
-  // Shadow deepens on press for a tactile lift.
-  const shadowOpacity = pressed.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0.15] });
 
   const label = (
     <View style={styles.row}>
@@ -79,11 +69,9 @@ const CapsuleButton = ({
     <Animated.View
       style={[
         styles.shadow,
-        // Only the gradient (primary) variant carries a soft tinted glow. Flat
-        // variants get NO shadow so their single-color border is the only edge.
-        v.gradient
-          ? { shadowColor: v.glow, shadowOpacity, borderRadius: s.radius }
-          : { borderRadius: s.radius, shadowOpacity: 0, elevation: 0 },
+        // Soft tinted glow for depth — on a solid same-color fill this reads as
+        // depth, never as a border.
+        { shadowColor: v.glow, borderRadius: s.radius },
         isDisabled && styles.disabled,
         { transform: [{ scale }] },
         style,
@@ -91,8 +79,8 @@ const CapsuleButton = ({
     >
       <Pressable
         onPress={isDisabled ? undefined : onPress}
-        onPressIn={() => !isDisabled && animateTo(0.96, 1)}
-        onPressOut={() => !isDisabled && animateTo(1, 0)}
+        onPressIn={() => !isDisabled && animateTo(0.96)}
+        onPressOut={() => !isDisabled && animateTo(1)}
         disabled={isDisabled}
         style={[styles.clip, { borderRadius: s.radius }]}
         accessibilityRole="button"
@@ -115,7 +103,8 @@ const CapsuleButton = ({
             {label}
           </LinearGradient>
         ) : (
-          <View style={[styles.fill, styles.glass, innerPad, { borderColor: v.border }]}>
+          // SOLID block fill — one flat color, no border, no gradient.
+          <View style={[styles.fill, innerPad, { backgroundColor: v.fill }]}>
             {label}
           </View>
         )}
@@ -126,21 +115,15 @@ const CapsuleButton = ({
 
 const styles = StyleSheet.create({
   shadow: {
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 3,
     alignSelf: 'stretch',
   },
   disabled: { opacity: 0.45 },
   clip: { overflow: 'hidden' },
   fill: { alignItems: 'center', justifyContent: 'center' },
-  // Secondary/danger fill. FULLY SOLID white (not translucent) so the pastel
-  // page gradient never bleeds through the edges — clean white + a thin solid
-  // single-color brand border + matching brand label.
-  glass: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-  },
   // Top-half highlight; sits above the gradient, below the label.
   shine: { position: 'absolute', top: 0, left: 0, right: 0, height: '55%' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
