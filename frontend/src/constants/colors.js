@@ -75,4 +75,16 @@ export default {
   // Soft, color-tinted shadows (glow) instead of hard black drop shadows.
   shadowPink: '#FF6B9D',
   shadowBlue: '#5CC9D1',
+
+  // Per-season gradient tints for the shareable color card's glass panel. Each
+  // is a 2-stop diagonal that matches the season's character:
+  //   Spring — warm pink -> orange   Summer — soft blue -> lavender
+  //   Autumn — earthy brown -> orange Winter — bold blue -> purple
+  // Keyed lowercase; look up with seasonGradient(season).
+  seasonGradients: {
+    spring: ['#FF8FB0', '#FFB463'],
+    summer: ['#7FB4F2', '#B9A6F5'],
+    autumn: ['#C77B3C', '#9A4E22'],
+    winter: ['#4A63E0', '#8A38C9'],
+  },
 };

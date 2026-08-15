@@ -4,40 +4,78 @@ import { BlurView } from 'expo-blur';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
 
-// Static glass framing guide shown over the selected/taken photo. NOT live face
-// detection — just a pre-submit framing aid. Redesigned for the glass-lollipop
-// look: a soft glass oval ring (double edge + pink glow) with an eye-level
-// reference and a frosted caption pill. Guides the FACE only (eyes, nose, mouth,
-// chin inside the oval) and never assumes hair is visible, so it reads correctly
-// for hijab / head-covering photos. The oval interior stays clear so the face
-// being framed is never obscured.
+// Framing guide drawn over the LIVE camera preview. The oval ring reacts in
+// real time to the face-detection result passed down from CustomCameraScreen:
+//
+//   status = 'idle'      -> neutral white ring (detector unavailable / warming up)
+//   status = 'searching' -> RED ring (no face, or face not yet inside the oval)
+//   status = 'good'      -> GREEN ring (a face is detected AND framed proportionally)
+//
+// The oval interior stays clear so the face being framed is never obscured, and
+// the shutter is NEVER gated on this — the color is only a hint. Guides the FACE
+// only (eyes, nose, mouth, chin inside the oval), so it also reads correctly for
+// hijab / head-covering photos.
 const GUIDE_WIDTH = 240;
 const GUIDE_HEIGHT = 312;
 
-const CameraGuideOverlay = ({ instructions = 'Position your face within the oval' }) => (
-  <View style={styles.overlay} pointerEvents="none">
-    <View style={styles.guideBox}>
-      {/* Outer soft glow ring + inner crisp ring for a glass edge. */}
-      <View style={styles.ovalGlow} />
-      <View style={styles.oval} />
+// Per-status visual theme for the ring + caption.
+const STATUS_THEME = {
+  idle: {
+    ring: colors.glassBorder,
+    glow: colors.glassBorderSoft,
+    shadow: colors.shadowPink,
+    tint: colors.glassFillStrong,
+    text: colors.text,
+    caption: 'Position your face within the oval',
+  },
+  searching: {
+    ring: '#FF5A5F',                        // warm red — not framed yet
+    glow: 'rgba(255, 90, 95, 0.55)',
+    shadow: '#FF5A5F',
+    tint: 'rgba(229, 72, 77, 0.30)',
+    text: '#FFFFFF',
+    caption: 'Center your face in the oval',
+  },
+  good: {
+    ring: '#37D67A',                        // fresh green — framed well
+    glow: 'rgba(55, 214, 122, 0.55)',
+    shadow: '#2E9E6B',
+    tint: 'rgba(46, 158, 107, 0.32)',
+    text: '#FFFFFF',
+    caption: 'Perfect — hold still and tap the shutter',
+  },
+};
 
-      <View style={styles.eyeLine}>
-        <View style={styles.eyeDot} />
-        <View style={styles.eyeBar} />
-        <View style={styles.eyeDot} />
-      </View>
-      <Text style={styles.eyeLabel}>Eye level</Text>
-    </View>
+const CameraGuideOverlay = ({ status = 'idle', instructions }) => {
+  const theme = STATUS_THEME[status] || STATUS_THEME.idle;
+  const caption = instructions || theme.caption;
 
-    <View style={styles.captionShadow}>
-      <View style={styles.captionClip}>
-        <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
-        <View style={[StyleSheet.absoluteFill, styles.captionTint]} />
-        <Text style={styles.instructions}>{instructions}</Text>
+  return (
+    <View style={styles.overlay} pointerEvents="none">
+      <View style={styles.guideBox}>
+        {/* Outer soft glow ring + inner crisp ring for a glass edge. Both tinted
+            by the current detection status. */}
+        <View style={[styles.ovalGlow, { borderColor: theme.glow, shadowColor: theme.shadow }]} />
+        <View style={[styles.oval, { borderColor: theme.ring }]} />
+
+        <View style={styles.eyeLine}>
+          <View style={styles.eyeDot} />
+          <View style={styles.eyeBar} />
+          <View style={styles.eyeDot} />
+        </View>
+        <Text style={styles.eyeLabel}>Eye level</Text>
+      </View>
+
+      <View style={[styles.captionShadow, { shadowColor: theme.shadow }]}>
+        <View style={styles.captionClip}>
+          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.tint }]} />
+          <Text style={[styles.instructions, { color: theme.text }]}>{caption}</Text>
+        </View>
       </View>
     </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   overlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' },
@@ -48,8 +86,7 @@ const styles = StyleSheet.create({
     width: GUIDE_WIDTH,
     height: GUIDE_WIDTH,
     borderRadius: GUIDE_WIDTH / 2,
-    borderWidth: 2.5,
-    borderColor: colors.glassBorder,
+    borderWidth: 3,
     transform: [{ scaleY: GUIDE_HEIGHT / GUIDE_WIDTH }],
   },
   // Slightly larger, softer ring for a glow halo.
@@ -59,12 +96,10 @@ const styles = StyleSheet.create({
     height: GUIDE_WIDTH + 12,
     borderRadius: (GUIDE_WIDTH + 12) / 2,
     borderWidth: 6,
-    borderColor: colors.glassBorderSoft,
     transform: [{ scaleY: GUIDE_HEIGHT / GUIDE_WIDTH }],
-    shadowColor: colors.shadowPink,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
   },
   eyeLine: {
     position: 'absolute',
@@ -86,9 +121,8 @@ const styles = StyleSheet.create({
   captionShadow: {
     marginTop: 28,
     borderRadius: 16,
-    shadowColor: colors.shadowPink,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.3,
     shadowRadius: 10,
   },
   captionClip: {
@@ -97,11 +131,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.glassBorder,
   },
-  captionTint: { backgroundColor: colors.glassFillStrong },
   instructions: {
     ...typography.label,
-    fontWeight: '600',
-    color: colors.text,
+    fontWeight: '700',
     textAlign: 'center',
     paddingVertical: 10,
     paddingHorizontal: 18,

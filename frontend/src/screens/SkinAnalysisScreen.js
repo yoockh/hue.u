@@ -26,7 +26,7 @@ try {
 const SkinAnalysisScreen = ({ navigation, route }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { performAnalysis, loading } = useSkinAnalysis();
-  const { setAnalysisResult, matchIntent } = useContext(AnalysisContext);
+  const { setAnalysisResult, setAnalyzedPhotoUri, matchIntent } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
 
   // Pre-flight validation: reject photos that are clearly too small for
@@ -143,6 +143,9 @@ const SkinAnalysisScreen = ({ navigation, route }) => {
     try {
       const result = await performAnalysis(photoUri);
       setAnalysisResult(result);
+      // Keep the selfie around so the shareable color card can use it as its
+      // background (see AnalysisResultScreen / ColorCard).
+      setAnalyzedPhotoUri(photoUri);
       // When the analysis was launched to feed the Product tab's tone features
       // (a parked matchIntent), return there so it can resume with the fresh
       // season instead of showing the standalone result screen.

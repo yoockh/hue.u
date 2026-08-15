@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../constants/colors';
 import typography from '../constants/typography';
@@ -9,60 +10,69 @@ import typography from '../constants/typography';
 const H_MARGIN = 16;   // gap from the screen's left/right edges
 const H_PADDING = 8;   // inner padding inside the capsule
 const BAR_HEIGHT = 64;
+const FAB_SIZE = 62;
 
-// Floating glass capsule bottom nav. Instead of a full-width bar glued to the
-// edge, it hovers with margins on all sides, blurs whatever scrolls beneath it,
-// and moves a pink->blue highlight pill smoothly to the active tab (Animated,
-// native driver).
+// The middle route is a non-navigable placeholder; pressing it starts the skin-
+// analysis flow instead of switching tabs.
+const CENTER_ROUTE = 'Camera';
+
+// Floating glass capsule bottom nav with 5 items:
+//   Dashboard · Product · [Camera FAB] · History · Account
+// The center Camera item is a raised pink->blue gradient FAB that floats above
+// the bar and opens the analysis flow (SkinAnalysis). The other four are neutral
+// glass tabs — gray when inactive, brand pink when active.
 const FloatingGlassTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
   const [barWidth, setBarWidth] = useState(0);
 
-  const tabCount = state.routes.length;
-  const tabWidth = barWidth > 0 ? (barWidth - H_PADDING * 2) / tabCount : 0;
-
-  const translateX = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (tabWidth <= 0) return;
-    Animated.spring(translateX, {
-      toValue: state.index * tabWidth,
-      useNativeDriver: true,
-      speed: 18,
-      bounciness: 8,
-    }).start();
-  }, [state.index, tabWidth, translateX]);
+  const openCamera = () => {
+    // Bubbles up to the parent stack. Starts the analysis flow from the nav bar.
+    navigation.navigate('SkinAnalysis');
+  };
 
   return (
     <View
       style={[styles.wrap, { left: H_MARGIN, right: H_MARGIN, bottom: insets.bottom + 10 }]}
       pointerEvents="box-none"
     >
+      {/* Raised center FAB, floating above the capsule. */}
+      <Pressable
+        onPress={openCamera}
+        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
+        accessibilityRole="button"
+        accessibilityLabel="Open camera to analyze your skin"
+      >
+        <LinearGradient
+          colors={colors.gradientButton}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabFill}
+        >
+          <Ionicons name="camera" size={28} color={colors.onPrimary} />
+        </LinearGradient>
+      </Pressable>
+
       <View style={styles.shadow}>
         <View style={styles.clip} onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}>
           <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
           <View style={[StyleSheet.absoluteFill, styles.tint]} />
 
           <View style={styles.row}>
-            {/* Moving highlight pill behind the active tab. */}
-            {tabWidth > 0 ? (
-              <Animated.View
-                style={[styles.pill, { width: tabWidth, transform: [{ translateX }] }]}
-                pointerEvents="none"
-              >
-                <LinearGradient
-                  colors={colors.gradientAccent}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.pillFill}
-                />
-              </Animated.View>
-            ) : null}
-
             {state.routes.map((route, index) => {
+              // The center slot is just a spacer + label under the floating FAB.
+              if (route.name === CENTER_ROUTE) {
+                return (
+                  <View key={route.key} style={styles.centerSlot} pointerEvents="none">
+                    <Text style={[styles.label, styles.centerLabel]} numberOfLines={1}>
+                      Camera
+                    </Text>
+                  </View>
+                );
+              }
+
               const { options } = descriptors[route.key];
               const focused = state.index === index;
-              const color = focused ? colors.onPrimary : colors.textSecondary;
+              const color = focused ? colors.primaryStrong : colors.textSecondary;
               const label = options.title || route.name;
 
               const onPress = () => {
@@ -114,17 +124,36 @@ const styles = StyleSheet.create({
   },
   tint: { backgroundColor: colors.glassFillStrong },
   row: { flex: 1, flexDirection: 'row', paddingHorizontal: H_PADDING, alignItems: 'center' },
-  pill: {
-    position: 'absolute',
-    left: H_PADDING,
-    top: 8,
-    bottom: 8,
-    borderRadius: 24,
-    overflow: 'hidden',
-  },
-  pillFill: { flex: 1 },
   tab: { flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center', gap: 2 },
+  centerSlot: { flex: 1, height: '100%', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 8 },
+  centerLabel: { color: colors.primaryStrong },
   label: { ...typography.caption, fontSize: 11, fontWeight: '700' },
+
+  // Raised FAB, horizontally centered and straddling the capsule's top edge.
+  fab: {
+    position: 'absolute',
+    left: '50%',
+    marginLeft: -FAB_SIZE / 2,
+    bottom: BAR_HEIGHT - 22,
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    borderRadius: FAB_SIZE / 2,
+    shadowColor: colors.shadowPink,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 12,
+    zIndex: 10,
+  },
+  fabPressed: { transform: [{ scale: 0.94 }] },
+  fabFill: {
+    flex: 1,
+    borderRadius: FAB_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.9)',
+  },
 });
 
 export default FloatingGlassTabBar;

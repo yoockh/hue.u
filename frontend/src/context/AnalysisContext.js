@@ -4,6 +4,10 @@ export const AnalysisContext = createContext();
 
 export const AnalysisProvider = ({ children }) => {
   const [analysisResult, setAnalysisResult] = useState(null);
+  // The face photo tied to the current result — used as the background of the
+  // shareable color card. Set on a fresh analysis and when opening a history
+  // item (which carries a stored photo_url).
+  const [analyzedPhotoUri, setAnalyzedPhotoUri] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   // Cross-flow hand-off for the Product tab's tone features. A pending intent is
   // parked here when the user leaves the Product tab to run/attach an analysis,
@@ -16,6 +20,7 @@ export const AnalysisProvider = ({ children }) => {
   return (
     <AnalysisContext.Provider value={{
       analysisResult, setAnalysisResult,
+      analyzedPhotoUri, setAnalyzedPhotoUri,
       selectedProduct, setSelectedProduct,
       matchIntent, setMatchIntent
     }}>
