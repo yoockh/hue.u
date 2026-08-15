@@ -7,7 +7,6 @@ import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
 import ScanningOverlay from '../components/ScanningOverlay';
-import CameraGuideOverlay from '../components/CameraGuideOverlay';
 import GradientBackground from '../components/GradientBackground';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
@@ -171,10 +170,10 @@ const SkinAnalysisScreen = ({ navigation }) => {
 
       <View style={[styles.imageContainer, photoUri ? styles.imageContainerFilled : null]}>
         {photoUri ? (
-          <View style={{ flex: 1 }}>
-            <Image source={{ uri: photoUri }} style={styles.image} />
-            <CameraGuideOverlay />
-          </View>
+          // Show the captured/selected photo clean — no framing overlay on top
+          // of a photo that's already been taken (the guide belongs on the LIVE
+          // preview, not the final image).
+          <Image source={{ uri: photoUri }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
             {/* Face-framing oval — purely a STATIC visual guide to help
