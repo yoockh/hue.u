@@ -18,7 +18,7 @@ const ProductCard = ({ product, onPress, matchRating, onTryProduct }) => {
 
   return (
     <Pressable onPress={onPress} style={styles.outer}>
-      <GlassCard padding={0} radius={22} intensity={26} glow="pink" style={styles.card}>
+      <GlassCard padding={0} intensity={26} glow="pink" style={styles.card}>
         <View>
           {showImage ? (
             <Image

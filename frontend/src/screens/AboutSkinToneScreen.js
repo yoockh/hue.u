@@ -53,7 +53,7 @@ const SEASONS = [
 ];
 
 const UndertoneCard = ({ name, hex, description, match }) => (
-  <GlassCard style={styles.card} padding={16} radius={16} intensity={36}>
+  <GlassCard style={styles.card} padding={16} intensity={36}>
     <View style={styles.cardHeader}>
       <View style={[styles.circle, { backgroundColor: hex }]} />
       <View style={styles.cardHeaderText}>
@@ -73,7 +73,6 @@ const SeasonRow = ({ name, hex, description }) => (
     style={styles.seasonRow}
     contentStyle={styles.seasonRowContent}
     padding={12}
-    radius={14}
     intensity={32}
   >
     <View style={[styles.seasonCircle, { backgroundColor: hex }]} />
