@@ -14,12 +14,17 @@ import typography from '../constants/typography';
 //   secondary translucent white glass, teal label + border
 //   danger    translucent white glass, red label + border
 // Sizes: 'md' (default) and 'sm' (compact, e.g. "Try This Product").
-// Secondary/danger use a SINGLE brand color for BOTH the border and the label
-// (border === text) so the edge never looks like a mismatched two-tone outline.
+// Spec-exact variants.
+//   primary   — #FF4D8D -> #5AC8FA horizontal gradient, #FFFFFF text, NO border,
+//               soft pink glow.
+//   secondary — SOLID #FFFFFF, 1px #2DBEBE border on all four sides, #2DBEBE
+//               text, and NO colored shadow (a tinted shadow was reading as an
+//               uneven two-tone edge).
+//   danger    — same flat treatment, red border+text.
 const VARIANTS = {
-  primary: { text: colors.onPrimary, glow: colors.shadowPink, gradient: true },
-  secondary: { text: colors.secondaryStrong, glow: colors.shadowBlue, border: colors.secondaryStrong },
-  danger: { text: colors.error, glow: colors.error, border: colors.error },
+  primary: { text: '#FFFFFF', glow: colors.shadowPink, gradient: true },
+  secondary: { text: colors.buttonSecondary, border: colors.buttonSecondary, flat: true },
+  danger: { text: colors.error, border: colors.error, flat: true },
 };
 
 const SIZES = {
@@ -74,7 +79,11 @@ const CapsuleButton = ({
     <Animated.View
       style={[
         styles.shadow,
-        { shadowColor: v.glow, shadowOpacity, borderRadius: s.radius },
+        // Only the gradient (primary) variant carries a soft tinted glow. Flat
+        // variants get NO shadow so their single-color border is the only edge.
+        v.gradient
+          ? { shadowColor: v.glow, shadowOpacity, borderRadius: s.radius }
+          : { borderRadius: s.radius, shadowOpacity: 0, elevation: 0 },
         isDisabled && styles.disabled,
         { transform: [{ scale }] },
         style,
@@ -92,7 +101,7 @@ const CapsuleButton = ({
           <LinearGradient
             colors={colors.gradientButton}
             start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+            end={{ x: 1, y: 0 }}
             style={[styles.fill, innerPad]}
           >
             {/* Glass shine on the top half. */}
@@ -130,7 +139,7 @@ const styles = StyleSheet.create({
   // single-color brand border + matching brand label.
   glass: {
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
+    borderWidth: 1,
   },
   // Top-half highlight; sits above the gradient, below the label.
   shine: { position: 'absolute', top: 0, left: 0, right: 0, height: '55%' },
