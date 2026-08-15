@@ -50,11 +50,11 @@ const ColorReportCard = ({ data, photoUri }) => {
     <LinearGradient
       colors={colors.gradientBackground}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 1 }}
       style={styles.report}
     >
       {/* HEADER: brand + selfie thumbnail, then a season gradient banner. */}
-      <GlassCard style={styles.panel} padding={16} radius={22}>
+      <GlassCard style={styles.panel} padding={16}>
         <View style={styles.headerRow}>
           <View style={styles.brandBlock}>
             <View style={styles.brandRow}>
@@ -90,7 +90,7 @@ const ColorReportCard = ({ data, photoUri }) => {
       </GlassCard>
 
       {/* UNDERTONE + why this season. */}
-      <GlassCard style={styles.panel} padding={16} radius={22} intensity={36}>
+      <GlassCard style={styles.panel} padding={16}>
         <Text style={styles.sectionLabel}>UNDERTONE</Text>
         <Text style={styles.undertoneValue}>{cap(undertone) || 'Not available'}</Text>
         {contrast ? (
@@ -103,7 +103,7 @@ const ColorReportCard = ({ data, photoUri }) => {
 
       {/* ANALYZED FEATURES — only what the API returned. */}
       {features.length > 0 ? (
-        <GlassCard style={styles.panel} padding={16} radius={22} intensity={36}>
+        <GlassCard style={styles.panel} padding={16}>
           <Text style={styles.sectionLabel}>ANALYZED FEATURES</Text>
           <View style={styles.featureRow}>
             {features.map((f) => (
@@ -115,7 +115,7 @@ const ColorReportCard = ({ data, photoUri }) => {
 
       {/* PALETTE grid. */}
       {palette.length > 0 ? (
-        <GlassCard style={styles.panel} padding={16} radius={22} intensity={36}>
+        <GlassCard style={styles.panel} padding={16}>
           <Text style={styles.sectionLabel}>YOUR PALETTE</Text>
           <View style={styles.paletteGrid}>
             {palette.map((c, i) => (

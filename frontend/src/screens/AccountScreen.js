@@ -17,7 +17,7 @@ const AccountScreen = () => (
       {/* Generative glass avatar. */}
       <View style={styles.avatarHalo}>
         <View style={styles.haloClip}>
-          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+          <BlurView intensity={50} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
           <View style={[StyleSheet.absoluteFill, styles.haloTint]} />
         </View>
         <LinearGradient

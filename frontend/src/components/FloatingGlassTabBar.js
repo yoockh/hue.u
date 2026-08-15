@@ -54,7 +54,7 @@ const FloatingGlassTabBar = ({ state, descriptors, navigation }) => {
 
       <View style={styles.shadow}>
         <View style={styles.clip} onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}>
-          <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
+          <BlurView intensity={60} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
           <View style={[StyleSheet.absoluteFill, styles.tint]} />
 
           <View style={styles.row}>

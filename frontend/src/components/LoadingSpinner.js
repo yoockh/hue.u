@@ -9,7 +9,7 @@ import typography from '../constants/typography';
 // faintly visible instead of a flat white block.
 const LoadingSpinner = ({ message = 'Loading...' }) => (
   <View style={styles.container}>
-    <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
+    <BlurView intensity={50} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
     <View style={[StyleSheet.absoluteFill, styles.wash]} />
     <ActivityIndicator size="large" color={colors.primaryStrong} />
     <Text style={styles.message}>{message}</Text>

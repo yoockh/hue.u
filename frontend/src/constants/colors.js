@@ -17,6 +17,9 @@ export default {
   // Baby blue / teal
   secondary: '#5CC9D1',      // brand baby-blue — borders, accents
   secondaryStrong: '#1F8E9C',// accessible teal for outline/text labels
+  // Exact spec color for SECONDARY buttons (border + label). Kept separate from
+  // secondaryStrong (which stays #1F8E9C for chips/wordmark text contrast).
+  buttonSecondary: '#2DBEBE',
   secondarySoft: '#DEF5F6',  // teal tint for surfaces
   onSecondary: '#FFFFFF',
 
@@ -49,20 +52,20 @@ export default {
   // --- Glass-lollipop redesign tokens ---------------------------------------
   // Full-screen pastel background gradient (pink -> lilac -> blue), fed to
   // expo-linear-gradient by the shared GradientBackground component.
-  gradientBackground: ['#FFE8F0', '#F2ECFF', '#E8F0FF'],
-  // Diagonal pink -> blue CTA gradient. The brand pink stays the anchor at the
-  // start so filled buttons still read as Hue.U.
-  gradientButton: ['#FF7BA8', '#8ABAF0'],
+  // Exact spec: vertical (180deg) top -> bottom.
+  gradientBackground: ['#FFE8F0', '#E8F0FF'],
+  // Exact spec: horizontal (90deg) pink -> blue CTA gradient.
+  gradientButton: ['#FF4D8D', '#5AC8FA'],
   // Bolder stops used for the pressed state so a tap deepens the gradient.
   gradientButtonStrong: ['#E84A7F', '#4FA3E0'],
   // A soft pink->blue used for accents (active tab pill, scan line).
   gradientAccent: ['#FF6B9D', '#5CC9D1'],
 
   // Glass surfaces: a white tint laid over a BlurView.
-  glassFill: 'rgba(255, 255, 255, 0.60)',       // default card tint
+  glassFill: 'rgba(255, 255, 255, 0.55)',       // default card tint (spec)
   glassFillStrong: 'rgba(255, 255, 255, 0.74)', // floating nav / dialogs
   glassFillSoft: 'rgba(255, 255, 255, 0.42)',   // lighter tint for long lists
-  glassBorder: 'rgba(255, 255, 255, 0.85)',     // crisp 1px highlight edge
+  glassBorder: 'rgba(255, 255, 255, 0.8)',      // crisp 1px highlight edge (spec)
   glassBorderSoft: 'rgba(255, 255, 255, 0.55)',
   // Darker glass tint for panels sitting over a photo, so overlaid text stays
   // legible without hiding the image behind it.

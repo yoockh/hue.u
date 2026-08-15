@@ -21,22 +21,33 @@ const GlassCard = ({
   children,
   style,
   contentStyle,
-  intensity = 40,
+  intensity = 50,
   tint = 'light',
   fill,
   border,
-  radius = 28,
+  radius = 24,
   glow = 'pink',
   padding = 16,
 }) => {
   const resolvedFill = fill || (tint === 'dark' ? colors.glassTintDark : colors.glassFill);
   const resolvedBorder = border || (tint === 'dark' ? colors.glassBorderDark : colors.glassBorder);
   const shadowColor = glow === 'blue' ? colors.shadowBlue : colors.shadowPink;
+  // Spec: BlurView intensity must be >= 50. experimentalBlurMethod is REQUIRED
+  // for a real blur on Android — without it expo-blur's own docs say it "falls
+  // back to a semi-transparent view instead of rendering a blur effect" (i.e. a
+  // flat box). See the honest caveat in the PR: over a smooth gradient the blur
+  // is subtle by nature; the tint + white border + soft shadow do the lifting.
+  const blurIntensity = Math.max(50, intensity);
 
   return (
     <View style={[styles.shadow, glow !== 'none' && { shadowColor }, { borderRadius: radius }, style]}>
       <View style={[styles.clip, { borderRadius: radius, borderColor: resolvedBorder }]}>
-        <BlurView intensity={intensity} tint={tint} style={StyleSheet.absoluteFill} />
+        <BlurView
+          intensity={blurIntensity}
+          tint={tint}
+          experimentalBlurMethod="dimezisBlurView"
+          style={StyleSheet.absoluteFill}
+        />
         <View style={[StyleSheet.absoluteFill, { backgroundColor: resolvedFill }]} />
         <View style={[{ padding }, contentStyle]}>{children}</View>
       </View>
