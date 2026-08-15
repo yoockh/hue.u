@@ -123,8 +123,12 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.45 },
   clip: { overflow: 'hidden' },
   fill: { alignItems: 'center', justifyContent: 'center' },
+  // Secondary/danger fill. Near-opaque white so the pastel page gradient does
+  // NOT bleed through (which made these read as a washed pink-teal gradient with
+  // an "inverted" look). Clean white + a thin solid brand border + brand-color
+  // label = a proper secondary button.
   glass: {
-    backgroundColor: colors.glassFillStrong,
+    backgroundColor: 'rgba(255,255,255,0.96)',
     borderWidth: 1.5,
   },
   // Top-half highlight; sits above the gradient, below the label.
