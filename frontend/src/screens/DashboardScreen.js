@@ -8,7 +8,9 @@ import colors from '../constants/colors';
 import typography from '../constants/typography';
 
 const avatarImage = require('../../assets/images/avatar.png');
-const ILLUSTRATION_HEIGHT = 280;
+// Portrait (1145x1374) face-mapping avatar — a taller card frames the face
+// without cropping into the eyes/brows the way the old square-tuned 280 did.
+const ILLUSTRATION_HEIGHT = 360;
 
 // Home tab. Opens the app: hero illustration (with a help shortcut to the
 // education screen) and the primary CTA into the existing analysis flow.
