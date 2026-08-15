@@ -130,11 +130,14 @@ const styles = StyleSheet.create({
   label: { ...typography.caption, fontSize: 11, fontWeight: '700' },
 
   // Raised FAB, horizontally centered and straddling the capsule's top edge.
+  // Sits ~22px above the bar (was ~40px, which read as too tall) so it still
+  // stands out as a floating action button but keeps a natural proportion next
+  // to the four flat nav items.
   fab: {
     position: 'absolute',
     left: '50%',
     marginLeft: -FAB_SIZE / 2,
-    bottom: BAR_HEIGHT - 22,
+    bottom: BAR_HEIGHT - 40,
     width: FAB_SIZE,
     height: FAB_SIZE,
     borderRadius: FAB_SIZE / 2,
