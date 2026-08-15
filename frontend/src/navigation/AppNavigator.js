@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import TabNavigator from './TabNavigator';
 import SkinAnalysisScreen from '../screens/SkinAnalysisScreen';
+import CustomCameraScreen from '../screens/CustomCameraScreen';
 import AnalysisResultScreen from '../screens/AnalysisResultScreen';
 import ProductCatalogScreen from '../screens/ProductCatalogScreen';
 import UploadFullBodyScreen from '../screens/UploadFullBodyScreen';
@@ -32,6 +33,11 @@ const AppNavigator = () => {
       }}>
         <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="SkinAnalysis" component={SkinAnalysisScreen} options={{ title: 'Home' }} />
+        <Stack.Screen
+          name="CustomCamera"
+          component={CustomCameraScreen}
+          options={{ headerShown: false, presentation: 'modal' }}
+        />
         <Stack.Screen name="AnalysisResult" component={AnalysisResultScreen} options={{ title: 'Your Result' }} />
         <Stack.Screen name="ProductCatalog" component={ProductCatalogScreen} options={{ title: 'Shop' }} />
         <Stack.Screen name="UploadFullBody" component={UploadFullBodyScreen} options={{ title: 'Virtual Try-On' }} />
