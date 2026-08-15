@@ -37,7 +37,7 @@ const HistoryThumb = ({ uri }) => {
 };
 
 const HistoryScreen = ({ navigation }) => {
-  const { setAnalysisResult } = useContext(AnalysisContext);
+  const { setAnalysisResult, setAnalyzedPhotoUri } = useContext(AnalysisContext);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -61,6 +61,7 @@ const HistoryScreen = ({ navigation }) => {
   // Reuse the existing analysis result screen by reconstructing its expected
   // shape from the saved history item.
   const openDetail = (item) => {
+    setAnalyzedPhotoUri(item.photo_url || null);
     setAnalysisResult({
       data: {
         analysis: {

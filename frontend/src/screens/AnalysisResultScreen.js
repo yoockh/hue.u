@@ -13,7 +13,7 @@ import colors from '../constants/colors';
 import typography from '../constants/typography';
 
 const AnalysisResultScreen = ({ navigation }) => {
-  const { analysisResult, setMatchIntent } = useContext(AnalysisContext);
+  const { analysisResult, analyzedPhotoUri, setMatchIntent } = useContext(AnalysisContext);
   const { showAlert } = useAlert();
   const cardRef = useRef(null);
   const [sharing, setSharing] = useState(false);
@@ -108,7 +108,7 @@ const AnalysisResultScreen = ({ navigation }) => {
           <View style={styles.shareSection}>
             <Text style={styles.sectionTitle}>Share Your Color Card</Text>
             <ViewShot ref={cardRef} options={{ format: 'png', quality: 0.9 }}>
-              <ColorCard season={season} palette={palette} />
+              <ColorCard season={season} palette={palette} photoUri={analyzedPhotoUri} />
             </ViewShot>
             <View style={styles.shareButtonSpacing}>
               <AppButton
