@@ -12,7 +12,7 @@ import typography from '../constants/typography';
 const ComingSoon = ({ icon = 'sparkles-outline', title, message = 'Coming soon' }) => (
   <View style={styles.container}>
     <View style={styles.badge}>
-      <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+      <BlurView intensity={50} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
       <View style={[StyleSheet.absoluteFill, styles.badgeTint]} />
       <Ionicons name={icon} size={44} color={colors.primaryStrong} />
     </View>

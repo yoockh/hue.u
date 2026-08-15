@@ -35,7 +35,7 @@ const NotificationBell = () => {
             onPress={() => {}}
           >
             <View style={styles.clip}>
-              <BlurView intensity={50} tint="light" style={StyleSheet.absoluteFill} />
+              <BlurView intensity={50} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
               <View style={[StyleSheet.absoluteFill, styles.tint]} />
               <View style={styles.content}>
                 <Text style={styles.title}>Notifications</Text>

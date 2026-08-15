@@ -68,7 +68,7 @@ const CameraGuideOverlay = ({ status = 'idle', instructions }) => {
 
       <View style={[styles.captionShadow, { shadowColor: theme.shadow }]}>
         <View style={styles.captionClip}>
-          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+          <BlurView intensity={50} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
           <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.tint }]} />
           <Text style={[styles.instructions, { color: theme.text }]}>{caption}</Text>
         </View>
