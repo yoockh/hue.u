@@ -33,6 +33,12 @@
           "photosPermission": "Hue.U uses your photo library so you can pick a selfie to analyze.",
           "cameraPermission": "Hue.U uses your camera so you can take a selfie to analyze."
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Hue.U uses your camera so you can take a guided selfie for skin-tone analysis."
+        }
       ]
     ],
     "extra": {

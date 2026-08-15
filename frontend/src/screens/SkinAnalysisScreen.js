@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -7,7 +7,6 @@ import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { AnalysisContext } from '../context/AnalysisContext';
 import { useAlert } from '../context/AlertContext';
 import ScanningOverlay from '../components/ScanningOverlay';
-import CameraGuideOverlay from '../components/CameraGuideOverlay';
 import GradientBackground from '../components/GradientBackground';
 import AppButton from '../components/AppButton';
 import colors from '../constants/colors';
@@ -24,7 +23,7 @@ try {
   // Native module not available — face detection will be skipped.
 }
 
-const SkinAnalysisScreen = ({ navigation }) => {
+const SkinAnalysisScreen = ({ navigation, route }) => {
   const [photoUri, setPhotoUri] = useState(null);
   const { performAnalysis, loading } = useSkinAnalysis();
   const { setAnalysisResult, matchIntent } = useContext(AnalysisContext);
@@ -85,30 +84,31 @@ const SkinAnalysisScreen = ({ navigation }) => {
     }
   };
 
-  const takePhoto = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      showAlert({
-        type: 'info',
-        title: 'Camera access needed',
-        message: 'Hue.U needs permission to use your camera. You can enable it in Settings.',
-      });
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [3, 4],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      const asset = result.assets[0];
-      if (!validatePhoto(asset)) return;
-      await processAndSet(asset.uri);
-    }
+  // Face photos are taken with the in-app custom camera (live framing guide,
+  // and — in a later stage — auto-capture) instead of the OS camera, so we can
+  // guide framing before the shutter fires. It returns the captured photo via
+  // navigation params, consumed by the effect below. Gallery import still uses
+  // the OS image picker (pickImage).
+  const takePhoto = () => {
+    navigation.navigate('CustomCamera');
   };
+
+  // Consume a photo handed back by the custom camera. Validate its size with the
+  // same pre-flight guard as gallery picks, then downscale/set it. The param is
+  // cleared afterward so re-renders don't re-process the same capture.
+  const capturedPhotoUri = route?.params?.capturedPhotoUri;
+  useEffect(() => {
+    if (!capturedPhotoUri) return;
+    const asset = {
+      uri: capturedPhotoUri,
+      width: route?.params?.capturedWidth,
+      height: route?.params?.capturedHeight,
+    };
+    navigation.setParams({ capturedPhotoUri: undefined, capturedWidth: undefined, capturedHeight: undefined });
+    if (!validatePhoto(asset)) return;
+    processAndSet(asset.uri);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capturedPhotoUri]);
 
   const handleAnalyze = async () => {
     if (!photoUri) {
@@ -171,10 +171,10 @@ const SkinAnalysisScreen = ({ navigation }) => {
 
       <View style={[styles.imageContainer, photoUri ? styles.imageContainerFilled : null]}>
         {photoUri ? (
-          <View style={{ flex: 1 }}>
-            <Image source={{ uri: photoUri }} style={styles.image} />
-            <CameraGuideOverlay />
-          </View>
+          // Show the captured/selected photo clean — no framing overlay on top
+          // of a photo that's already been taken (the guide belongs on the LIVE
+          // preview, not the final image).
+          <Image source={{ uri: photoUri }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
             {/* Face-framing oval — purely a STATIC visual guide to help
