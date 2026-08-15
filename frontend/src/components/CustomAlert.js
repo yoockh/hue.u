@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, View, Text, StyleSheet } from 'react-native';
+import { Modal, View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppButton from './AppButton';
 import colors from '../constants/colors';
@@ -39,8 +39,21 @@ const CustomAlert = ({ visible, type = 'info', title, message, buttons, onClose 
       statusBarTranslucent
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.card}>
+      {/* Tap the dim backdrop to dismiss. Inner card swallows the press. */}
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable style={styles.card} onPress={() => {}}>
+          {/* Clear close (X) — applied here so EVERY alert app-wide can be
+              dismissed without choosing an action. */}
+          <TouchableOpacity
+            style={styles.close}
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="close" size={22} color={colors.textSecondary} />
+          </TouchableOpacity>
+
           <View style={[styles.iconWrap, { backgroundColor: t.soft }]}>
             <Ionicons name={t.icon} size={32} color={t.color} />
           </View>
@@ -59,8 +72,8 @@ const CustomAlert = ({ visible, type = 'info', title, message, buttons, onClose 
               />
             ))}
           </View>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
@@ -86,6 +99,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 8,
   },
+  close: { position: 'absolute', top: 12, right: 12, zIndex: 1, padding: 4 },
   iconWrap: {
     width: 64,
     height: 64,
